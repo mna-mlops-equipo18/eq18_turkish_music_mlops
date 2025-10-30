@@ -129,7 +129,8 @@ def main(model_name):
     ])
 
     cv = StratifiedKFold(n_splits=n_splits, shuffle=kfold_shuffle, random_state=random_state)
-    grid = GridSearchCV(full_pipeline, param_grid, cv=cv, scoring=grid_search_cv_scoring, n_jobs=grid_search_cv_n_jobs)
+    param_grid_prefixed = {f"modelo__{k}": v for k, v in param_grid.items()}
+    grid = GridSearchCV(full_pipeline,  param_grid_prefixed, cv=cv, scoring=grid_search_cv_scoring, n_jobs=grid_search_cv_n_jobs)
     grid.fit(X, y_encoded)
 
     print(f"Mejor modelo: {grid.best_params_}")
