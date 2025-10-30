@@ -2,20 +2,31 @@ stages:
   prepare:
     cmd: python eq18_turkish_music_mlops/prepare.py
     deps:
-      - data/raw/turkish_music_emotion_modified.csv
       - eq18_turkish_music_mlops/prepare.py
+      - data/raw/turkish_music_emotion_modified.csv
+      - params.yaml
     outs:
       - data/processed/train.csv
       - data/processed/test.csv
-      - models/preprocessor.pkl
-      - models/label_encoder.pkl
-      - reports/outlier_report.json
+
   train:
     cmd: python eq18_turkish_music_mlops/train.py --model logistic
     deps:
       - eq18_turkish_music_mlops/train.py
       - data/processed/train.csv
-      - models/preprocessor.pkl
+      - params.yaml
     outs:
       - models/model_logistic.pkl
+      - models/label_encoder.pkl
       - reports/train_results_logistic.json
+
+  evaluate:
+    cmd: python eq18_turkish_music_mlops/evaluate.py --model logistic
+    deps:
+      - eq18_turkish_music_mlops/evaluate.py
+      - data/processed/test.csv
+      - models/model_logistic.pkl
+      - models/label_encoder.pkl
+      - params.yaml
+    outs:
+      - reports/evaluate_results_logistic.json

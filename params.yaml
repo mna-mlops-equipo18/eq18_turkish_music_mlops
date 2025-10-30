@@ -1,0 +1,22 @@
+paths:
+  raw_data: data/raw/turkish_music_emotion_modified.csv
+  processed_dir: data/processed
+  models_dir: models
+  reports_dir: reports
+
+data:
+  target_col: Class
+  valid_classes: ["happy", "sad", "angry", "relax"]
+  test_size: 0.2
+  random_state: 42
+
+processing:
+  iqr_factor: 1.5
+  pca_variance: 0.90
+  imputer_strategy: "median"
+
+training:
+  n_splits: 5
+  kfold_shuffle: True
+  grid_search_cv_scoring: "accuracy"
+  grid_search_cv_n_jobs: -1
