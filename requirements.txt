@@ -4,12 +4,8 @@ isort
 mkdocs
 python-dotenv
 -e .
-numpy
-pandas
 scipy
-matplotlib
 seaborn
-scikit-learn
 dvc
 cookiecutter-data-science
 pytest
@@ -18,3 +14,7 @@ mlflow
 evidently
 sdv
 deepchecks
+scikit-learn==1.7.2
+pandas==2.3.3
+numpy==2.3.4
+matplotlib==3.10.7
