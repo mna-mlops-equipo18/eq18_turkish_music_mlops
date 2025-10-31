@@ -1,2 +1,2 @@
-/outlier_report.json
-/train_results_logistic.json
+# Todos los reportes generados por el pipeline
+*.json
