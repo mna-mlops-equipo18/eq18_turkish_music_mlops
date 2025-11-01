@@ -32,6 +32,7 @@ stages:
       - models/model_logistic.pkl
       - models/label_encoder.pkl
       - reports/train_results_logistic.json
+      - reports/run_id_logistic.txt
 
   # --- Random Forest ---
   train_randomforest:
@@ -45,6 +46,7 @@ stages:
       - models/model_randomforest.pkl
       # label_encoder.pkl ya fue generado por logistic, no duplicar
       - reports/train_results_randomforest.json
+      - reports/run_id_randomforest.txt
 
   # --- XGBoost ---
   train_xgboost:
@@ -57,6 +59,7 @@ stages:
     outs:
       - models/model_xgboost.pkl
       - reports/train_results_xgboost.json
+      - reports/run_id_xgboost.txt
 
   # =========================================================================
   # STAGE 3: EVALUACIÓN DE MODELOS
@@ -71,6 +74,7 @@ stages:
       - models/model_logistic.pkl
       - models/label_encoder.pkl
       - params.yaml
+      - reports/run_id_logistic.txt
     metrics:
       - reports/evaluate_results_logistic.json:
           cache: false
@@ -84,6 +88,7 @@ stages:
       - models/model_randomforest.pkl
       - models/label_encoder.pkl
       - params.yaml
+      - reports/run_id_randomforest.txt
     metrics:
       - reports/evaluate_results_randomforest.json:
           cache: false
@@ -97,6 +102,7 @@ stages:
       - models/model_xgboost.pkl
       - models/label_encoder.pkl
       - params.yaml
+      - reports/run_id_xgboost.txt
     metrics:
       - reports/evaluate_results_xgboost.json:
           cache: false

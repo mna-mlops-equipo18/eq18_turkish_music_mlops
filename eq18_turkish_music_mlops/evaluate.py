@@ -32,6 +32,8 @@ from sklearn.metrics import (
 )
 import argparse
 
+from eq18_turkish_music_mlops.utils.mlflow import log_evaluation_to_run
+
 # Configurar logging
 logging.basicConfig(
     level=logging.INFO,
@@ -331,6 +333,13 @@ def main(model_name):
         
         # 10. Guardar resultados
         save_results(results, reports_dir, model_name)
+
+        log_evaluation_to_run(
+            model_name=model_name,
+            results=results,
+            reports_dir=reports_dir
+        )
+
         
         logger.info("="*60)
         logger.info("EVALUACIÓN COMPLETADA EXITOSAMENTE")
