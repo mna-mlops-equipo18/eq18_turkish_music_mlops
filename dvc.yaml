@@ -1,0 +1,113 @@
+# Pipeline DVC para Turkish Music Emotion Classification
+# Este archivo define las etapas de preparación, entrenamiento y evaluación
+# para los tres modelos: Logistic Regression, Random Forest y XGBoost
+
+stages:
+  # =========================================================================
+  # STAGE 1: PREPARACIÓN DE DATOS
+  # =========================================================================
+  prepare:
+    cmd: python -m eq18_turkish_music_mlops.prepare
+    deps:
+      - eq18_turkish_music_mlops/prepare.py
+      - data/raw/turkish_music_emotion_modified.csv
+      - params.yaml
+    outs:
+      - data/processed/train.csv
+      - data/processed/test.csv
+
+  # =========================================================================
+  # STAGE 2: ENTRENAMIENTO DE MODELOS
+  # =========================================================================
+  
+  # --- Logistic Regression ---
+  train_logistic:
+    cmd: python -m eq18_turkish_music_mlops.train --model logistic
+    deps:
+      - eq18_turkish_music_mlops/train.py
+      - eq18_turkish_music_mlops/utils/transformers.py
+      - data/processed/train.csv
+      - params.yaml
+    outs:
+      - models/model_logistic.pkl
+      - models/label_encoder.pkl
+      - reports/train_results_logistic.json
+
+  # --- Random Forest ---
+  train_randomforest:
+    cmd: python -m eq18_turkish_music_mlops.train --model randomforest
+    deps:
+      - eq18_turkish_music_mlops/train.py
+      - eq18_turkish_music_mlops/utils/transformers.py
+      - data/processed/train.csv
+      - params.yaml
+    outs:
+      - models/model_randomforest.pkl
+      # label_encoder.pkl ya fue generado por logistic, no duplicar
+      - reports/train_results_randomforest.json
+
+  # --- XGBoost ---
+  train_xgboost:
+    cmd: python -m eq18_turkish_music_mlops.train --model xgboost
+    deps:
+      - eq18_turkish_music_mlops/train.py
+      - eq18_turkish_music_mlops/utils/transformers.py
+      - data/processed/train.csv
+      - params.yaml
+    outs:
+      - models/model_xgboost.pkl
+      - reports/train_results_xgboost.json
+
+  # =========================================================================
+  # STAGE 3: EVALUACIÓN DE MODELOS
+  # =========================================================================
+  
+  # --- Evaluación Logistic Regression ---
+  evaluate_logistic:
+    cmd: python -m eq18_turkish_music_mlops.evaluate --model logistic
+    deps:
+      - eq18_turkish_music_mlops/evaluate.py
+      - data/processed/test.csv
+      - models/model_logistic.pkl
+      - models/label_encoder.pkl
+      - params.yaml
+    metrics:
+      - reports/evaluate_results_logistic.json:
+          cache: false
+
+  # --- Evaluación Random Forest ---
+  evaluate_randomforest:
+    cmd: python -m eq18_turkish_music_mlops.evaluate --model randomforest
+    deps:
+      - eq18_turkish_music_mlops/evaluate.py
+      - data/processed/test.csv
+      - models/model_randomforest.pkl
+      - models/label_encoder.pkl
+      - params.yaml
+    metrics:
+      - reports/evaluate_results_randomforest.json:
+          cache: false
+
+  # --- Evaluación XGBoost ---
+  evaluate_xgboost:
+    cmd: python -m eq18_turkish_music_mlops.evaluate --model xgboost
+    deps:
+      - eq18_turkish_music_mlops/evaluate.py
+      - data/processed/test.csv
+      - models/model_xgboost.pkl
+      - models/label_encoder.pkl
+      - params.yaml
+    metrics:
+      - reports/evaluate_results_xgboost.json:
+          cache: false
+
+# =========================================================================
+# NOTAS IMPORTANTES:
+# =========================================================================
+# 1. El stage 'prepare' se ejecuta una sola vez para todos los modelos
+# 2. Los stages de train son independientes entre sí (pueden correr en paralelo)
+# 3. Cada evaluate depende de su modelo correspondiente
+# 4. label_encoder.pkl se genera en el primer train y se reutiliza
+# 5. Para ejecutar todo el pipeline: dvc repro
+# 6. Para ejecutar solo un modelo: dvc repro evaluate_logistic
+# 7. Para comparar métricas: dvc metrics show
