@@ -19,19 +19,26 @@ import joblib
 import logging
 import sys
 import time
+import mlflow
+import mlflow.sklearn
+import argparse
+import json
+
 from pathlib import Path
 from sklearn.model_selection import StratifiedKFold, GridSearchCV
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-from xgboost import XGBClassifier
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler, LabelEncoder, PowerTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
-import argparse
-import json
+
+from xgboost import XGBClassifier
+
+
 from eq18_turkish_music_mlops.utils.transformers import OutlierIQRTransformer
+from eq18_turkish_music_mlops.utils.mlflow import start_training_run
 
 # Configurar logging
 logging.basicConfig(
@@ -404,6 +411,14 @@ def main(model_name):
         # 14. Guardar modelo y resultados
         save_model_and_results(grid, model_name, models_dir, reports_dir)
         
+        start_training_run(
+            model_name=model_name,
+            params=params,
+            grid=grid,
+            models_dir=models_dir,
+            reports_dir=reports_dir
+        )
+
         logger.info("="*60)
         logger.info("ENTRENAMIENTO COMPLETADO EXITOSAMENTE")
         logger.info("="*60)
