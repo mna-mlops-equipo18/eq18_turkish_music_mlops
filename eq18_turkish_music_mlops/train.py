@@ -172,16 +172,13 @@ def create_preprocessing_pipeline(numeric_cols, params, random_state):
     # Pipeline numérico
     numeric_pipeline = Pipeline([
         ("outliers", OutlierIQRTransformer(factor=iqr_factor)),
-        ("imputer", SimpleImputer(strategy=imputer_strategy)), # Arregla NaNs originales
-        ("power", PowerTransformer(method=power_transform_method)), # <-- Crea 'inf'
+        ("imputer", SimpleImputer(strategy=imputer_strategy)),
+        ("cleanup_finite_pre", FunctionTransformer(clean_finite_values, validate=False)),
+        ("power", PowerTransformer(method=power_transform_method)),
+        ("cleanup_finite_post", FunctionTransformer(clean_finite_values, validate=False)),
         ("scaler", StandardScaler()),
-        
-        # --- ¡ESTA ES LA LÍNEA CORRECTA! ---
-        # Arregla CUALQUIER inf o NaN creado por los pasos anteriores
-        ("cleanup_finite", FunctionTransformer(clean_finite_values, validate=False)), 
-        
         ("pca", PCA(n_components=pca_variance, random_state=random_state)),
-    ])
+])
     
     preprocessor = ColumnTransformer([
         ("num", numeric_pipeline, numeric_cols)
@@ -369,7 +366,9 @@ def main(model_name):
         save_label_encoder(label_encoder, models_dir)
         
         # 6. Identificar columnas numéricas
-        numeric_cols = X.select_dtypes(include=["int64", "float64"]).columns.tolist()
+        # numeric_cols = X.select_dtypes(include=["int64", "float64"]).columns.tolist()
+        numeric_cols = X.select_dtypes(include=["number"]).columns.tolist()
+
         logger.info(f"Columnas numéricas: {len(numeric_cols)}")
         
         # 7. Crear preprocessing pipeline
