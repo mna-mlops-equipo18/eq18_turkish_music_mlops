@@ -110,3 +110,28 @@ python3 -m venv .venv
 source .venv/bin/activate
 
 ```
+---
+
+## Paso 2. Configuración del Entorno 
+```bash
+
+# 1. Crea el entorno 
+python3 -m venv .venv
+
+# 2. Activar entorno virtual
+source .venv/bin/activate
+
+```
+---
+
+## Paso 3. Crear Swap
+
+```bash
+
+sudo fallocate -l 4G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+
+```
+---
