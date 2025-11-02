@@ -84,7 +84,7 @@ def start_training_run(
             # 6. Loguear Modelo (formato nativo MLflow)
             mlflow.sklearn.log_model(
                 sk_model=grid.best_estimator_,
-                artifact_path=f"mlflow_model_{model_name}"
+                name=f"mlflow_model_{model_name}"
             )
             logger.info("Modelo logueado en formato nativo de MLflow.")
 
