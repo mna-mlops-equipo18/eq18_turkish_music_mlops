@@ -23,6 +23,7 @@ import mlflow
 import mlflow.sklearn
 import argparse
 import json
+import numpy as np
 
 from pathlib import Path
 from sklearn.model_selection import StratifiedKFold, GridSearchCV
@@ -37,6 +38,7 @@ from sklearn.compose import ColumnTransformer
 from eq18_turkish_music_mlops.utils.transformers import OutlierIQRTransformer
 from eq18_turkish_music_mlops.utils.mlflow import start_training_run
 from eq18_turkish_music_mlops.utils.logger import setup_logging
+from sklearn.preprocessing import FunctionTransformer
 
 # Configurar logging
 setup_logging()
@@ -143,14 +145,6 @@ def validate_pca_components(n_components, max_features):
 def create_preprocessing_pipeline(numeric_cols, params, random_state):
     """
     Crea el pipeline de preprocesamiento.
-    
-    Args:
-        numeric_cols (list): Lista de columnas numéricas
-        params (dict): Diccionario de parámetros
-        random_state (int): Semilla para reproducibilidad
-        
-    Returns:
-        ColumnTransformer: Pipeline de preprocesamiento completo
     """
     iqr_factor = params["processing"]["iqr_factor"]
     pca_variance = params["processing"]["pca_variance"]
@@ -165,14 +159,27 @@ def create_preprocessing_pipeline(numeric_cols, params, random_state):
     
     # Validar PCA
     validate_pca_components(pca_variance, len(numeric_cols))
-    
+
+    # Reemplaza NaN e inf 
+    def clean_finite_values(X):
+        return np.nan_to_num(
+            X, 
+            nan=0.0, 
+            posinf=np.finfo(np.float32).max, 
+            neginf=np.finfo(np.float32).min
+        )
+
     # Pipeline numérico
     numeric_pipeline = Pipeline([
         ("outliers", OutlierIQRTransformer(factor=iqr_factor)),
-        ("imputer", SimpleImputer(strategy=imputer_strategy)),
-        ("power", PowerTransformer(method=power_transform_method)),
+        ("imputer", SimpleImputer(strategy=imputer_strategy)), # Arregla NaNs originales
+        ("power", PowerTransformer(method=power_transform_method)), # <-- Crea 'inf'
         ("scaler", StandardScaler()),
-        ("imputer_final", SimpleImputer(strategy="median")), 
+        
+        # --- ¡ESTA ES LA LÍNEA CORRECTA! ---
+        # Arregla CUALQUIER inf o NaN creado por los pasos anteriores
+        ("cleanup_finite", FunctionTransformer(clean_finite_values, validate=False)), 
+        
         ("pca", PCA(n_components=pca_variance, random_state=random_state)),
     ])
     
