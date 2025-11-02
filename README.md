@@ -84,10 +84,13 @@ Estructura basada en **Cookiecutter Data Science**. Control de código con **Git
 
 | Requisito | Descripción |
 |------------|-------------|
-| **Python** | Recomendado: 3.11 (verificado en `pyproject.toml`) |
-| **Git** | Para clonar el repositorio |
-| **Azure Storage Key** | Archivo `azure_key.txt` con la *Account Key* de tu contenedor |
-| *(Opcional)* **Servidor MLflow** | VM con ≥4GB RAM, ≥30GB disco, y puerto `5000` abierto |
+| **Python** | Recomendado: `3.11` (verificado en `pyproject.toml`) |
+| **RAM** | **Mínimo 4GB.** El `pip install` fallará con menos. |
+| **Disco** | Mínimo 30GB de almacenamiento. |
+| **Git** | Para clonar el repositorio. |
+| **Azure Storage Key** | Archivo `azure_key.txt` con la *Account Key* de tu contenedor. |
+| *(Opcional)* **Swap** | **Altamente recomendado** si la RAM es ≤8GB para evitar `Killed` errors. |
+| *(Opcional)* **Servidor MLflow** | VM con los requisitos de RAM/Disco y puerto `5000` abierto. |
 
 ---
 
