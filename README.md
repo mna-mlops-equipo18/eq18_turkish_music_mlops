@@ -135,3 +135,38 @@ sudo swapon /swapfile
 
 ```
 ---
+
+## Paso 4. Instalar Dependencias
+Recomendamos altamente empezar a instalar lo mas pesado al principio.
+
+```bash
+
+pip install torch
+pip install pandas numpy scikit-learn
+pip install "dvc[azure]" mlflow xgboost
+pip install -r requirements.txt
+
+```
+---
+
+## Paso 5. Conectar DVC a Azure
+Teniendo en cuenta que ya tienes tu llave (azure_key.txt) en tu maquina.
+
+```bash
+
+# moveremos la llave al root del proyecto
+mv /ruta/a/tu/azure_key.txt .
+AZURE_KEY_VALUE=$(cat azure_key.txt)
+dvc remote modify azure-storage account_key "$AZURE_KEY_VALUE" --local
+
+```
+---
+
+## Paso 6. Descargar los datos
+
+```bash
+
+dvc pull
+
+```
+---
