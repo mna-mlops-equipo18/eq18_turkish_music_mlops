@@ -170,3 +170,37 @@ dvc pull
 
 ```
 ---
+
+## Paso 7. Ejecutar pipelines
+Primero correremos un servidor de MLflow para poder ver todos los experimentos
+
+```bash
+
+nohup mlflow ui \
+    --backend-store-uri sqlite:///mlflow-server-data/mlflow.db \
+    --default-artifact-root ./mlflow-server-data/artifacts \
+    --host 0.0.0.0 \
+    --port 5000 \
+    --allowed-hosts "*" \
+    > mlflow-server.log 2>&1 &
+
+```
+---
+
+## Paso 8. Configurar nuestra terminal al servidor de MLflow
+
+```bash
+
+export MLFLOW_TRACKING_URI="[http://127.0.0.1:5000](http://127.0.0.1:5000)"
+
+```
+---
+
+## Paso 9. Ejecutar pipeline
+
+```bash
+
+dvc repro
+
+```
+---
