@@ -19,8 +19,6 @@ import joblib
 import logging
 import sys
 import time
-import mlflow
-import mlflow.sklearn
 import argparse
 import json
 import numpy as np
@@ -102,8 +100,8 @@ def clean_finite_values(X):
     return np.nan_to_num(
         X, 
         nan=0.0, 
-        posinf=np.finfo(np.float32).max, 
-        neginf=np.finfo(np.float32).min
+        posinf=np.finfo(np.float64).max,
+        neginf=np.finfo(np.float64).min 
     )
     
 

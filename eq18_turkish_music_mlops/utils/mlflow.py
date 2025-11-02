@@ -13,7 +13,9 @@ import json
 from pathlib import Path
 from typing import Dict, Any
 from sklearn.model_selection import GridSearchCV
+from eq18_turkish_music_mlops.utils.logger import setup_logging
 
+setup_logging()
 logger = logging.getLogger(__name__)
 
 def start_training_run(
