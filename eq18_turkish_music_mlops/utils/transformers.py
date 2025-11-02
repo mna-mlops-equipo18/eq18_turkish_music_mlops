@@ -11,6 +11,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+def clean_finite_values(X):
+    X = np.nan_to_num(X, nan=0.0, posinf=0.0, neginf=0.0)
+    X = np.clip(X, -1e6, 1e6)
+    return X
+
 
 class OutlierIQRTransformer(BaseEstimator, TransformerMixin):
     """

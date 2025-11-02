@@ -33,6 +33,7 @@ from sklearn.metrics import (
 import argparse
 
 from eq18_turkish_music_mlops.utils.mlflow import log_evaluation_to_run
+from eq18_turkish_music_mlops.utils.transformers import clean_finite_values
 
 # Configurar logging
 logging.basicConfig(

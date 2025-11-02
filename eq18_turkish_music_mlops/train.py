@@ -33,7 +33,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 
-from eq18_turkish_music_mlops.utils.transformers import OutlierIQRTransformer
+from eq18_turkish_music_mlops.utils.transformers import OutlierIQRTransformer, clean_finite_values
 from eq18_turkish_music_mlops.utils.mlflow import start_training_run
 from eq18_turkish_music_mlops.utils.logger import setup_logging
 from sklearn.preprocessing import FunctionTransformer
@@ -92,14 +92,6 @@ def get_model(model_name, random_state):
         )
 
     return model
-
-
-# Reemplaza NaN e inf 
-def clean_finite_values(X):
-    X = np.nan_to_num(X, nan=0.0, posinf=0.0, neginf=0.0)
-    X = np.clip(X, -1e6, 1e6)
-    return X
-    
 
 def load_params(params_path="params.yaml"):
     """
