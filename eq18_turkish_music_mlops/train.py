@@ -408,7 +408,7 @@ def main(model_name):
         )
 
         logger.info("="*60)
-        logger.info("ENTRENAMIENTO COMPLETADO EXITOSAMENTE")
+        logger.info("ENTRENAMIENTO COMPLETADO EXITOSAMENTE ")
         logger.info("="*60)
         
     except Exception as e:
