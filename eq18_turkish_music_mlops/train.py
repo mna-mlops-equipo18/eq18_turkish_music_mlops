@@ -56,7 +56,6 @@ def get_model(model_name, random_state):
     if model_name == "logistic":
         # Logistic Regression ya está importado arriba, está bien
         model = LogisticRegression(
-            multi_class="multinomial",
             solver="lbfgs",
             max_iter=1000,
             random_state=random_state,
@@ -173,6 +172,7 @@ def create_preprocessing_pipeline(numeric_cols, params, random_state):
         ("imputer", SimpleImputer(strategy=imputer_strategy)),
         ("power", PowerTransformer(method=power_transform_method)),
         ("scaler", StandardScaler()),
+        ("imputer_final", SimpleImputer(strategy="median")), 
         ("pca", PCA(n_components=pca_variance, random_state=random_state)),
     ])
     
