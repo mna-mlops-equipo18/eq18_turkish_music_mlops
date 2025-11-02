@@ -81,7 +81,6 @@ def get_model(model_name, random_state):
             num_class=4,
             eval_metric="mlogloss",
             random_state=random_state,
-            use_label_encoder=False,
             n_jobs=-1
         )
         logger.info("Modelo XGBoost inicializado")
