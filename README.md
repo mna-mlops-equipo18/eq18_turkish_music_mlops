@@ -79,124 +79,34 @@ Estructura basada en **Cookiecutter Data Science**. Control de código con **Git
 * `requirements.txt` — dependencias Python.
 * `README.md` — este archivo.
 
-## Requisitos
 
-* Python 3.13
-* virtualenv
-* Git
-* `dvc[azure]` instalado
-* `ACCOUNT_KEY` de la cuenta de Azure Storage (compartida por otro medio)
-* Nota: Este README muestra comandos para Windows
+## 1. Requisitos
 
-## Pasos para clonar y obtener datos
-
-Este repositorio es **privado**, por lo que cada integrante debe autenticarse en GitHub antes de poder clonarlo.
-
-### 1. Generar un Personal Access Token (PAT) en GitHub
-
-1. Entra a [GitHub > Settings > Developer settings > Personal access tokens > Tokens (classic)](https://github.com/settings/tokens).
-2. Haz clic en **Generate new token (classic)**.
-3. Asigna un nombre (ej. `eq18_turkish_music_mlops`).
-4. Selecciona al menos el permiso **repo**.
-5. Crea el token y **cópialo** (se muestra solo una vez).
-
-> ⚠️ Guarda tu PAT en un lugar seguro. Este token reemplaza tu contraseña en Git.
+| Requisito | Descripción |
+|------------|-------------|
+| **Python** | Recomendado: 3.11 (verificado en `pyproject.toml`) |
+| **Git** | Para clonar el repositorio |
+| **Azure Storage Key** | Archivo `azure_key.txt` con la *Account Key* de tu contenedor |
+| *(Opcional)* **Servidor MLflow** | VM con ≥4GB RAM, ≥30GB disco, y puerto `5000` abierto |
 
 ---
 
-### 2. Clonar el repositorio
+## Paso 1: Clonar el Repositorio
 
-En una terminal (PowerShell o CMD):
- 
 ```bash
-git clone https://github.com/maurocastill/eq18_turkish_music_mlops.git
+# Clona el repositorio
+git clone <URL_DE_TU_REPOSITORIO>
+
+# Entra a la carpeta
 cd eq18_turkish_music_mlops
-```
 
-Cuando se pida usuario/contraseña:
+# Cambiar a la rama development
+git checkout development
 
-* **Usuario** = tu nombre de usuario de GitHub.
-* **Contraseña** = pega el PAT que generaste.
+# 1. Crea el entorno 
+python3 -m venv .venv
 
-##  Flujo de trabajo en el proyecto
+# 2. Activar el entorno virtual
+source .venv/bin/activate
 
-Cada integrante del equipo debe de trabajar **en su propia rama** para asi mantener limpio el historial del proyecto y evitar problemas de integración de código.
-
-### Guía rápida 
-1. Actualiza tu rama local principal:
-   ```bash
-   git checkout main
-   git pull origin main
-   git checkout -b <nombre_de_rama>
-   
-   *ejemplo: mariofonsecabranch*
-
-2. Para subir cambios nuevos deben subirlo con su rama
-   ```bash
-   git add .
-   git commit -m "Descripción breve del cambio que se hizo"
-   git push origin <nombre_de_rama>
-
-3. Una vez que hayas subido tus cambios. Crear un "Pull Request" en GitHub"
-
-    * Entra a [GitHub > Pull requests](https://github.com/maurocastill/eq18_turkish_music_mlops/pulls).
-    * Hacer click en el botón "New pull request"
-    * Seleccionar base: development
-    * Seleccionar compare: main
-    * Hacer click en el botón "Create pull request"
-
----
-
-### 3. Configurar credenciales para no ingresarlas siempre (Windows recomendado)
-
-Ejecuta una vez:
-
-```bash
-git config --global credential.helper manager
-```
-
-Esto guarda tu usuario y PAT en el **Administrador de Credenciales de Windows**.
-De ahora en adelante, `git push` y `git pull` no volverán a pedir tu token.
-
----
-
-### 4. Preparar entorno Python
-
-1. Activa el entorno virtual compartido `env-mlops-313` (o crea uno nuevo con Python 3.13).
-2. Instala dependencias:
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-### 5. Configurar acceso a datos en Azure
-
-Cada integrante debe configurar la `ACCOUNT_KEY` localmente.
-
-```bash
-dvc remote modify azure-storage account_key "AZURE_KEY" --local
-```
-
----
-
-### 6. Descargar los datos con DVC
-
-Ejecuta:
-
-```bash
-dvc pull
-```
-
-Al terminar verás `data/raw/*.csv` descargados desde Azure.
-
---------
-
-### 7. Agregar datos a DVC
-
-Ejecuta:
-
-```bash
-dvc push
 ```
