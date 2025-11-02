@@ -96,6 +96,17 @@ def get_model(model_name, random_state):
 
     return model
 
+
+# Reemplaza NaN e inf 
+def clean_finite_values(X):
+    return np.nan_to_num(
+        X, 
+        nan=0.0, 
+        posinf=np.finfo(np.float32).max, 
+        neginf=np.finfo(np.float32).min
+    )
+    
+
 def load_params(params_path="params.yaml"):
     """
     Carga parámetros desde archivo YAML.
@@ -159,15 +170,6 @@ def create_preprocessing_pipeline(numeric_cols, params, random_state):
     
     # Validar PCA
     validate_pca_components(pca_variance, len(numeric_cols))
-
-    # Reemplaza NaN e inf 
-    def clean_finite_values(X):
-        return np.nan_to_num(
-            X, 
-            nan=0.0, 
-            posinf=np.finfo(np.float32).max, 
-            neginf=np.finfo(np.float32).min
-        )
 
     # Pipeline numérico
     numeric_pipeline = Pipeline([
