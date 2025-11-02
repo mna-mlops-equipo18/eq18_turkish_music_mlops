@@ -34,39 +34,27 @@ from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 
-from xgboost import XGBClassifier
-
-
 from eq18_turkish_music_mlops.utils.transformers import OutlierIQRTransformer
 from eq18_turkish_music_mlops.utils.mlflow import start_training_run
+from eq18_turkish_music_mlops.utils.logger import setup_logging
 
 # Configurar logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('logs/train.log'),
-        logging.StreamHandler(sys.stdout)
-    ]
-)
+setup_logging()
 logger = logging.getLogger(__name__)
 
+# ... (imports de sklearn, pandas, etc.) ...
+from sklearn.linear_model import LogisticRegression
+# <-- YA NO IMPORTAS XGBOOST NI RANDOM FOREST AQUÍ
+
+# ... (más código) ...
 
 def get_model(model_name, random_state):
     """
     Retorna la instancia del modelo base según el nombre.
-    
-    Args:
-        model_name (str): Nombre del modelo ('logistic', 'randomforest', 'xgboost')
-        random_state (int): Semilla para reproducibilidad
-        
-    Returns:
-        sklearn estimator: Instancia del modelo
-        
-    Raises:
-        ValueError: Si el modelo no está soportado
     """
+    
     if model_name == "logistic":
+        # Logistic Regression ya está importado arriba, está bien
         model = LogisticRegression(
             multi_class="multinomial",
             solver="lbfgs",
@@ -76,6 +64,9 @@ def get_model(model_name, random_state):
         logger.info("Modelo Logistic Regression inicializado")
 
     elif model_name == "randomforest":
+        # --- Importa Random Forest AQUÍ ---
+        from sklearn.ensemble import RandomForestClassifier
+        
         model = RandomForestClassifier(
             random_state=random_state,
             n_jobs=-1  # Usar todos los cores disponibles
@@ -83,6 +74,9 @@ def get_model(model_name, random_state):
         logger.info("Modelo Random Forest inicializado")
 
     elif model_name == "xgboost":
+        # --- Importa XGBoost AQUÍ ---
+        from xgboost import XGBClassifier
+
         model = XGBClassifier(
             objective="multi:softmax",
             num_class=4,
@@ -100,7 +94,6 @@ def get_model(model_name, random_state):
         )
 
     return model
-
 
 def load_params(params_path="params.yaml"):
     """

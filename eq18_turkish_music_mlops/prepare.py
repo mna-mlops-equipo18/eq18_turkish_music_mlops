@@ -17,17 +17,13 @@ import logging
 from pathlib import Path
 import yaml
 from sklearn.model_selection import train_test_split
+
+from eq18_turkish_music_mlops.utils.logger import setup_logging
 import sys
 
-# Configurar logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('logs/prepare.log'),
-        logging.StreamHandler(sys.stdout)
-    ]
-)
+# Configuración de loggin
+setup_logging()
+
 logger = logging.getLogger(__name__)
 
 
