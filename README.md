@@ -178,7 +178,6 @@ dvc pull
 Primero correremos un servidor de MLflow para poder ver todos los experimentos
 
 ```bash
-
 nohup mlflow ui \
     --backend-store-uri sqlite:///mlflow-server-data/mlflow.db \
     --default-artifact-root ./mlflow-server-data/artifacts \
@@ -186,32 +185,26 @@ nohup mlflow ui \
     --port 5000 \
     --allowed-hosts "*" \
     > mlflow-server.log 2>&1 &
-
 ```
 ---
 
 ## Paso 8. Configurar nuestra terminal al servidor de MLflow
 
 ```bash
-
-export MLFLOW_TRACKING_URI="[http://127.0.0.1:5000](http://127.0.0.1:5000)"
-
+export MLFLOW_TRACKING_URI="http://127.0.0.1:5000"
 ```
 ---
 
 ## Paso 9. Ejecutar pipeline
 
 ```bash
-
 dvc repro
-
 ```
 ---
 
 ## Paso 10. Guardar trabajo
 
 ```bash
-
 # 1. Sube los modelos/reportes nuevos a nuestro bucket de Azure
 dvc push
 
@@ -219,6 +212,5 @@ dvc push
 git add dvc.lock reports/.gitignore
 git commit -m "Pipeline completo ejecutado y modelos actualizados"
 git push origin development
-
 ```
 ---
