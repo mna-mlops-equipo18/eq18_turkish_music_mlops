@@ -204,3 +204,18 @@ dvc repro
 
 ```
 ---
+
+## Paso 10. Guardar trabajo
+
+```bash
+
+# 1. Sube los modelos/reportes nuevos a nuestro bucket de Azure
+dvc push
+
+# 2. Guardar punteros en git
+git add dvc.lock reports/.gitignore
+git commit -m "Pipeline completo ejecutado y modelos actualizados"
+git push origin development
+
+```
+---
