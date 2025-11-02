@@ -97,12 +97,9 @@ def get_model(model_name, random_state):
 
 # Reemplaza NaN e inf 
 def clean_finite_values(X):
-    return np.nan_to_num(
-        X, 
-        nan=0.0, 
-        posinf=np.finfo(np.float64).max,
-        neginf=np.finfo(np.float64).min 
-    )
+    X = np.nan_to_num(X, nan=0.0, posinf=0.0, neginf=0.0)
+    X = np.clip(X, -1e6, 1e6)
+    return X
     
 
 def load_params(params_path="params.yaml"):
@@ -171,14 +168,15 @@ def create_preprocessing_pipeline(numeric_cols, params, random_state):
 
     # Pipeline numérico
     numeric_pipeline = Pipeline([
-        ("outliers", OutlierIQRTransformer(factor=iqr_factor)),
-        ("imputer", SimpleImputer(strategy=imputer_strategy)),
-        ("cleanup_finite_pre", FunctionTransformer(clean_finite_values, validate=False)),
-        ("power", PowerTransformer(method=power_transform_method)),
-        ("cleanup_finite_post", FunctionTransformer(clean_finite_values, validate=False)),
+        ("imputer", SimpleImputer(strategy="median")),
+        ("cleanup1", FunctionTransformer(clean_finite_values, validate=False)),
+        ("power", PowerTransformer(method="yeo-johnson")),
+        ("cleanup2", FunctionTransformer(clean_finite_values, validate=False)),
         ("scaler", StandardScaler()),
-        ("pca", PCA(n_components=pca_variance, random_state=random_state)),
-])
+        ("cleanup3", FunctionTransformer(clean_finite_values, validate=False)),
+        ("pca", PCA(n_components=0.95, random_state=42)),
+        ("cleanup4", FunctionTransformer(clean_finite_values, validate=False)),
+    ])
     
     preprocessor = ColumnTransformer([
         ("num", numeric_pipeline, numeric_cols)
