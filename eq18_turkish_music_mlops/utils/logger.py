@@ -18,14 +18,12 @@ def setup_logging():
     LOGS_DIR.mkdir(exist_ok=True)
 
     # --- 2. Configuración básica ---
-    # (Solo se configura una vez, la primera vez que se llama)
     logging.basicConfig(
         level=logging.INFO,
         
         # Formato del log
         format="%(asctime)s - [%(levelname)s] - %(name)s - %(message)s",
         
-        # Manejadores (a dónde enviar los logs)
         handlers=[
             # Escribir todos los logs en un solo archivo
             logging.FileHandler(LOGS_DIR / "pipeline.log"),

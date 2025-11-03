@@ -98,27 +98,12 @@ def start_training_run(
 
     except Exception as e:
         logger.error(f"Error al loguear entrenamiento en MLflow: {e}", exc_info=True)
-        # No relanzamos la excepción para no fallar el pipeline de DVC
-        # si MLflow (que es opcional) falla.
-
 
 def log_evaluation_to_run(
     model_name: str,
     results: Dict[str, Any],
     reports_dir: Path
 ):
-    """
-    Reanuda un run existente de MLflow para loguear métricas de evaluación.
-
-    Carga el run_id desde el archivo, reabre el run y añade:
-    - Métricas finales (accuracy, f1_macro, etc.).
-    - Artefacto de reporte de evaluación (.json).
-    
-    Args:
-        model_name (str): Nombre del modelo (e.g., 'logistic').
-        results (dict): Diccionario de resultados de evaluate.py.
-        reports_dir (Path): Directorio de reportes.
-    """
     logger.info(f"Logueando métricas de evaluación en MLflow para [{model_name}]")
     
     run_id_path = reports_dir / f"run_id_{model_name}.txt"
@@ -142,18 +127,16 @@ def log_evaluation_to_run(
         # 2. Reabrir el run
         with mlflow.start_run(run_id=run_id):
             
-            # 3. Loguear Métricas (finales, del test set)
+            # 3. Loguear Métricas 
             if "metrics" in results:
                 mlflow.log_metrics(results["metrics"])
                 logger.info("Métricas finales (test) logueadas en MLflow.")
             
-            # 4. Loguear Artefacto (reporte de evaluación)
+            # 4. Loguear Artefacto 
             report_path = reports_dir / f"evaluate_results_{model_name}.json"
             if report_path.exists():
                 mlflow.log_artifact(str(report_path), "reports")
                 logger.info("Reporte de evaluación logueado en MLflow.")
-                
-            # (Aquí iría el código para loguear la Matriz de Confusión)
 
     except Exception as e:
         logger.error(f"Error al loguear evaluación en MLflow: {e}", exc_info=True)
