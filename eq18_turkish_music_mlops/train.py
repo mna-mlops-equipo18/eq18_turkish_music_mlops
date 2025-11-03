@@ -41,12 +41,7 @@ from sklearn.preprocessing import FunctionTransformer
 # Configurar logging
 setup_logging()
 logger = logging.getLogger(__name__)
-
-# ... (imports de sklearn, pandas, etc.) ...
 from sklearn.linear_model import LogisticRegression
-# <-- YA NO IMPORTAS XGBOOST NI RANDOM FOREST AQUÍ
-
-# ... (más código) ...
 
 def get_model(model_name, random_state):
     """
@@ -63,7 +58,8 @@ def get_model(model_name, random_state):
         logger.info("Modelo Logistic Regression inicializado")
 
     elif model_name == "randomforest":
-        # --- Importa Random Forest AQUÍ ---
+
+
         from sklearn.ensemble import RandomForestClassifier
         
         model = RandomForestClassifier(
@@ -73,7 +69,7 @@ def get_model(model_name, random_state):
         logger.info("Modelo Random Forest inicializado")
 
     elif model_name == "xgboost":
-        # --- Importa XGBoost AQUÍ ---
+        
         from xgboost import XGBClassifier
 
         model = XGBClassifier(
