@@ -97,12 +97,12 @@ stages:
       size: 101853
     - path: eq18_turkish_music_mlops/train.py
       hash: md5
-      md5: 28169f5e590f1da62f40842e31a81a09
-      size: 15138
+      md5: f53cc31598da9c9edf5ed73ff01a2a46
+      size: 14810
     - path: eq18_turkish_music_mlops/utils/transformers.py
       hash: md5
-      md5: aa40a012254a9c8936289b671ca16d58
-      size: 6640
+      md5: 363a9b75f5a0c18e23b84679fc0c0f57
+      size: 6663
     - path: params.yaml
       hash: md5
       md5: 3b177fc09b7ecd78a0ee0d462d3b9249
@@ -118,12 +118,12 @@ stages:
       size: 25954
     - path: reports/run_id_logistic.txt
       hash: md5
-      md5: 18cc4b947b703d7c1e0e8916d2cd6c06
+      md5: 84136265f39325bb3ac63a54e3deb357
       size: 32
     - path: reports/train_results_logistic.json
       hash: md5
-      md5: 0b956e8f333cb39e1be0095d198d3f86
-      size: 338
+      md5: 15ebfc8ccbae13e99d54615b72d29e04
+      size: 339
   train_randomforest:
     cmd: python -m eq18_turkish_music_mlops.train --model randomforest
     deps:
@@ -133,12 +133,12 @@ stages:
       size: 101853
     - path: eq18_turkish_music_mlops/train.py
       hash: md5
-      md5: 28169f5e590f1da62f40842e31a81a09
-      size: 15138
+      md5: f53cc31598da9c9edf5ed73ff01a2a46
+      size: 14810
     - path: eq18_turkish_music_mlops/utils/transformers.py
       hash: md5
-      md5: aa40a012254a9c8936289b671ca16d58
-      size: 6640
+      md5: 363a9b75f5a0c18e23b84679fc0c0f57
+      size: 6663
     - path: params.yaml
       hash: md5
       md5: 3b177fc09b7ecd78a0ee0d462d3b9249
@@ -150,11 +150,11 @@ stages:
       size: 2122699
     - path: reports/run_id_randomforest.txt
       hash: md5
-      md5: f0b9e40242beb6f824ae54a4a00766cb
+      md5: 437abfab4bd8c4c703bded0fb8688f9b
       size: 32
     - path: reports/train_results_randomforest.json
       hash: md5
-      md5: 898d6355cfcceb0c68482d12ae03fa25
+      md5: 3b39450974c3ad064bd225ceead7243a
       size: 432
   train_xgboost:
     cmd: python -m eq18_turkish_music_mlops.train --model xgboost
@@ -165,12 +165,12 @@ stages:
       size: 101853
     - path: eq18_turkish_music_mlops/train.py
       hash: md5
-      md5: 28169f5e590f1da62f40842e31a81a09
-      size: 15138
+      md5: f53cc31598da9c9edf5ed73ff01a2a46
+      size: 14810
     - path: eq18_turkish_music_mlops/utils/transformers.py
       hash: md5
-      md5: aa40a012254a9c8936289b671ca16d58
-      size: 6640
+      md5: 363a9b75f5a0c18e23b84679fc0c0f57
+      size: 6663
     - path: params.yaml
       hash: md5
       md5: 3b177fc09b7ecd78a0ee0d462d3b9249
@@ -178,15 +178,15 @@ stages:
     outs:
     - path: models/model_xgboost.pkl
       hash: md5
-      md5: e963efc30ba38ada652b651a684f5c48
-      size: 1753655
+      md5: d209754e49feb7d433222c196673293d
+      size: 1753927
     - path: reports/run_id_xgboost.txt
       hash: md5
-      md5: 99bf3926fe457ba46015f6c88dfd878f
+      md5: 2ee9b48a90fd40bdb3d2f8bfa8833da9
       size: 32
     - path: reports/train_results_xgboost.json
       hash: md5
-      md5: bb3ce87ca5725f4c6734efe592887d02
+      md5: 8d53d8b93f37aeabd778a71db34c5133
       size: 455
   evaluate_logistic:
     cmd: python -m eq18_turkish_music_mlops.evaluate --model logistic
@@ -213,7 +213,7 @@ stages:
       size: 4173
     - path: reports/run_id_logistic.txt
       hash: md5
-      md5: 18cc4b947b703d7c1e0e8916d2cd6c06
+      md5: 84136265f39325bb3ac63a54e3deb357
       size: 32
     outs:
     - path: reports/evaluate_results_logistic.json
@@ -245,7 +245,7 @@ stages:
       size: 4173
     - path: reports/run_id_randomforest.txt
       hash: md5
-      md5: f0b9e40242beb6f824ae54a4a00766cb
+      md5: 437abfab4bd8c4c703bded0fb8688f9b
       size: 32
     outs:
     - path: reports/evaluate_results_randomforest.json
@@ -269,15 +269,15 @@ stages:
       size: 503
     - path: models/model_xgboost.pkl
       hash: md5
-      md5: e963efc30ba38ada652b651a684f5c48
-      size: 1753655
+      md5: d209754e49feb7d433222c196673293d
+      size: 1753927
     - path: params.yaml
       hash: md5
       md5: 3b177fc09b7ecd78a0ee0d462d3b9249
       size: 4173
     - path: reports/run_id_xgboost.txt
       hash: md5
-      md5: 99bf3926fe457ba46015f6c88dfd878f
+      md5: 2ee9b48a90fd40bdb3d2f8bfa8833da9
       size: 32
     outs:
     - path: reports/evaluate_results_xgboost.json
