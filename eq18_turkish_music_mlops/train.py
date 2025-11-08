@@ -158,7 +158,7 @@ def create_preprocessing_pipeline(numeric_cols, params, random_state):
         ("outliers", OutlierIQRTransformer(factor=iqr_factor)),
         ("imputer", SimpleImputer(strategy=imputer_strategy)),
         ("power", PowerTransformer(method=power_transform_method)),
-        ("clipper", FunctionTransformer(clean_finite_values, validate=False)),  # ← nuevo debido a valores infinitos generados por power sensibles en RandomForest.
+        ("clipper", FunctionTransformer(clean_finite_values, validate=False)),
         ("scaler", StandardScaler()),
         ("pca", PCA(n_components=pca_variance, random_state=random_state)),
     ])
