@@ -10,7 +10,6 @@ dvc
 cookiecutter-data-science
 pytest
 fastapi
-mlflow
 evidently
 sdv
 deepchecks
