@@ -1,0 +1,130 @@
+# PARÁMETROS DEL PROYECTO: Turkish Music Emotion Classification
+
+# Dentro de este archivo tenemos todos los parámetros del proyecto
+
+# Archivos y Directorios
+paths:
+  raw_data: data/raw/turkish_music_emotion_modified.csv
+  processed_dir: data/processed
+  models_dir: models
+  reports_dir: reports
+
+# Configuración de datos
+
+data:
+  # Columna objetivo 
+  target_col: Class
+  
+  # Clases válidas para clasificación multiclase
+  # IMPORTANTE: Deben estar en minúsculas (se normalizan en prepare.py)
+  valid_classes: ["happy", "sad", "angry", "relax"]
+  
+  # Proporción de datos para test (0.2 = 20%)
+  test_size: 0.2
+  
+  # Semilla aleatoria para reproducibilidad
+  # CRÍTICO: Mantener fijo para garantizar splits consistentes
+  random_state: 42
+
+# Procesamiento
+
+processing:
+  # Factor IQR para detección de outliers
+  # 1.5 = definición estándar, 3.0 = solo outliers extremos
+  iqr_factor: 1.5
+  
+  # Varianza explicada para PCA (0.90 = 90%)
+  # Alternativa: número entero de componentes (ej: 10)
+  pca_variance: 0.90
+  
+  # Estrategia para imputación de valores faltantes
+  # Opciones: "mean", "median", "most_frequent", "constant"
+  imputer_strategy: "median"
+  
+  # Método de transformación de potencia para normalizar distribuciones
+  # Opciones: "yeo-johnson" (maneja valores negativos), "box-cox" (solo positivos)
+  # Yeo-Johnson es más robusto y maneja 0s y negativos
+  power_transform_method: "yeo-johnson"
+
+# Configuración de entrenamiento
+
+training:
+  # Número de folds para validación cruzada
+  n_splits: 5
+  
+  # Mezclar datos antes de dividir en folds
+  kfold_shuffle: true
+  
+  # Métrica de optimización para Grid Search
+  # Opciones: "accuracy", "f1_macro", "f1_weighted", "precision_macro"
+  grid_search_cv_scoring: "f1_macro"
+  
+  # Número de jobs paralelos (-1 = usar todos los cores)
+  grid_search_cv_n_jobs: -1
+
+# Hiperparametros separados por modelos
+
+# Cada modelo tiene su propio grid de hiperparámetros.
+# Grid Search probará todas las combinaciones posibles.
+
+hyperparameters:
+  # --- Logistic Regression ---
+  logistic:
+    # Inverso de la regularización (menor = más regularización)
+    C: [0.01, 0.1, 1, 10]
+    
+    # Balanceo de clases (null = sin balanceo, "balanced" = automático)
+    # IMPORTANTE: 'null' en YAML = None en Python
+    class_weight: [null, "balanced"]
+    
+    # Incluir término de intercept (bias)
+    fit_intercept: [true, false]
+
+  # --- Random Forest ---
+  randomforest:
+    # Número de árboles en el bosque
+    n_estimators: [100, 200, 300]
+    
+    # Profundidad máxima de cada árbol (null = sin límite)
+    max_depth: [10, 15, 20] # [null, 10, 20, 30]
+    
+    # Mínimo de muestras para dividir un nodo
+    min_samples_split: [5, 10] # [2, 5, 10]
+    
+    # Mínimo de muestras en nodos hoja
+    min_samples_leaf: [2, 4, 8] # [1, 2, 4]
+
+  # --- XGBoost ---
+  xgboost:
+    # Número de árboles (boosting rounds)
+    n_estimators: [100, 200, 300]
+    
+    # Tasa de aprendizaje (menor = más conservador)
+    learning_rate: [0.01, 0.05, 0.1]
+    
+    # Profundidad máxima de árboles
+    max_depth: [3, 5, 7]
+    
+    # Subsample ratio de datos de entrenamiento
+    subsample: [0.8, 1.0]
+    
+    # Regularización L2 en pesos
+    reg_lambda: [1, 5, 10]
+
+# Configuración de MLflow
+mlflow:
+  # Nombre de experimento
+  experiment_name: "Turkish Music Emotion Experiment"
+
+# ============================================================================
+# NOTAS IMPORTANTES
+# ============================================================================
+# 1. REPRODUCIBILIDAD: Mantener random_state fijo en 42
+# 2. GRID SEARCH: Reducir grids para pruebas rápidas
+# 3. PCA: Ajustar pca_variance según varianza explicada deseada
+# 4. SCORING: f1_macro es bueno para clases desbalanceadas
+# 5. YAML: 'null' = None, 'true/false' = True/False en Python
+# 6. POWER TRANSFORM: yeo-johnson maneja valores negativos y zeros
+#    - Reduce asimetría (skewness) en distribuciones
+#    - Mejora normalidad de features
+#    - Puede mejorar performance de modelos lineales

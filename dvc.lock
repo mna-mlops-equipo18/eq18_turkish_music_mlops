@@ -1,0 +1,286 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python -m eq18_turkish_music_mlops.prepare
+    deps:
+    - path: data/raw/turkish_music_emotion_modified.csv
+      hash: md5
+      md5: ae5f16bc9e319aa4323f8d08e3306e70
+      size: 133386
+    - path: eq18_turkish_music_mlops/prepare.py
+      hash: md5
+      md5: 5fd39ebca25b720f5fef3d1b8b625463
+      size: 11286
+    - path: params.yaml
+      hash: md5
+      md5: 3b177fc09b7ecd78a0ee0d462d3b9249
+      size: 4173
+    outs:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: f2819a404591e51d79f353c0ba528769
+      size: 26648
+    - path: data/processed/train.csv
+      hash: md5
+      md5: ad7fb3a80eec686dc1c8880e57176086
+      size: 101853
+  train:
+    cmd: python -m eq18_turkish_music_mlops.train --model logistic
+    deps:
+    - path: data/processed/train.csv
+      hash: md5
+      md5: ad7fb3a80eec686dc1c8880e57176086
+      size: 101853
+    - path: eq18_turkish_music_mlops/train.py
+      hash: md5
+      md5: cd305cb3f5c82498f0068470f3659388
+      size: 4875
+    - path: eq18_turkish_music_mlops/utils/transformers.py
+      hash: md5
+      md5: 5e1d643ef50c6ee418d7e6a78aec6793
+      size: 554
+    - path: params.yaml
+      hash: md5
+      md5: 0258d808453df17d14ac0de1156fa0c2
+      size: 940
+    outs:
+    - path: models/label_encoder.pkl
+      hash: md5
+      md5: 20d5afd40c640dc20d075b6c80d4205b
+      size: 503
+    - path: models/model_logistic.pkl
+      hash: md5
+      md5: 9caf46eec060e46f06d0ba5d39bb5fd1
+      size: 25490
+    - path: reports/train_results_logistic.json
+      hash: md5
+      md5: f30d913e05a62abbe06d8359280f6dc4
+      size: 208
+  evaluate:
+    cmd: python -m eq18_turkish_music_mlops.evaluate --model logistic
+    deps:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: f2819a404591e51d79f353c0ba528769
+      size: 26648
+    - path: eq18_turkish_music_mlops/evaluate.py
+      hash: md5
+      md5: 95ce771793d7db1c74c3b1616d9cf908
+      size: 2153
+    - path: eq18_turkish_music_mlops/utils/transformers.py
+      hash: md5
+      md5: 5e1d643ef50c6ee418d7e6a78aec6793
+      size: 554
+    - path: models/label_encoder.pkl
+      hash: md5
+      md5: 20d5afd40c640dc20d075b6c80d4205b
+      size: 503
+    - path: models/model_logistic.pkl
+      hash: md5
+      md5: 9caf46eec060e46f06d0ba5d39bb5fd1
+      size: 25490
+    - path: params.yaml
+      hash: md5
+      md5: 0258d808453df17d14ac0de1156fa0c2
+      size: 940
+    outs:
+    - path: reports/evaluate_results_logistic.json
+      hash: md5
+      md5: 77d3f2ccd0e915adf692d25064436d0f
+      size: 1661
+  train_logistic:
+    cmd: python -m eq18_turkish_music_mlops.train --model logistic
+    deps:
+    - path: data/processed/train.csv
+      hash: md5
+      md5: ad7fb3a80eec686dc1c8880e57176086
+      size: 101853
+    - path: eq18_turkish_music_mlops/train.py
+      hash: md5
+      md5: f53cc31598da9c9edf5ed73ff01a2a46
+      size: 14810
+    - path: eq18_turkish_music_mlops/utils/transformers.py
+      hash: md5
+      md5: 363a9b75f5a0c18e23b84679fc0c0f57
+      size: 6663
+    - path: params.yaml
+      hash: md5
+      md5: 3b177fc09b7ecd78a0ee0d462d3b9249
+      size: 4173
+    outs:
+    - path: models/label_encoder.pkl
+      hash: md5
+      md5: 20d5afd40c640dc20d075b6c80d4205b
+      size: 503
+    - path: models/model_logistic.pkl
+      hash: md5
+      md5: d44c16314f4504c28885bbf094800d7f
+      size: 25954
+    - path: reports/run_id_logistic.txt
+      hash: md5
+      md5: 84136265f39325bb3ac63a54e3deb357
+      size: 32
+    - path: reports/train_results_logistic.json
+      hash: md5
+      md5: 15ebfc8ccbae13e99d54615b72d29e04
+      size: 339
+  train_randomforest:
+    cmd: python -m eq18_turkish_music_mlops.train --model randomforest
+    deps:
+    - path: data/processed/train.csv
+      hash: md5
+      md5: ad7fb3a80eec686dc1c8880e57176086
+      size: 101853
+    - path: eq18_turkish_music_mlops/train.py
+      hash: md5
+      md5: f53cc31598da9c9edf5ed73ff01a2a46
+      size: 14810
+    - path: eq18_turkish_music_mlops/utils/transformers.py
+      hash: md5
+      md5: 363a9b75f5a0c18e23b84679fc0c0f57
+      size: 6663
+    - path: params.yaml
+      hash: md5
+      md5: 3b177fc09b7ecd78a0ee0d462d3b9249
+      size: 4173
+    outs:
+    - path: models/model_randomforest.pkl
+      hash: md5
+      md5: 70bf2b9e4d2b22052b9c82e70a3c2ca2
+      size: 2122699
+    - path: reports/run_id_randomforest.txt
+      hash: md5
+      md5: 437abfab4bd8c4c703bded0fb8688f9b
+      size: 32
+    - path: reports/train_results_randomforest.json
+      hash: md5
+      md5: 3b39450974c3ad064bd225ceead7243a
+      size: 432
+  train_xgboost:
+    cmd: python -m eq18_turkish_music_mlops.train --model xgboost
+    deps:
+    - path: data/processed/train.csv
+      hash: md5
+      md5: ad7fb3a80eec686dc1c8880e57176086
+      size: 101853
+    - path: eq18_turkish_music_mlops/train.py
+      hash: md5
+      md5: f53cc31598da9c9edf5ed73ff01a2a46
+      size: 14810
+    - path: eq18_turkish_music_mlops/utils/transformers.py
+      hash: md5
+      md5: 363a9b75f5a0c18e23b84679fc0c0f57
+      size: 6663
+    - path: params.yaml
+      hash: md5
+      md5: 3b177fc09b7ecd78a0ee0d462d3b9249
+      size: 4173
+    outs:
+    - path: models/model_xgboost.pkl
+      hash: md5
+      md5: d209754e49feb7d433222c196673293d
+      size: 1753927
+    - path: reports/run_id_xgboost.txt
+      hash: md5
+      md5: 2ee9b48a90fd40bdb3d2f8bfa8833da9
+      size: 32
+    - path: reports/train_results_xgboost.json
+      hash: md5
+      md5: 8d53d8b93f37aeabd778a71db34c5133
+      size: 455
+  evaluate_logistic:
+    cmd: python -m eq18_turkish_music_mlops.evaluate --model logistic
+    deps:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: f2819a404591e51d79f353c0ba528769
+      size: 26648
+    - path: eq18_turkish_music_mlops/evaluate.py
+      hash: md5
+      md5: c176678b063e0c5cfd91fdf6f24d9e33
+      size: 11838
+    - path: models/label_encoder.pkl
+      hash: md5
+      md5: 20d5afd40c640dc20d075b6c80d4205b
+      size: 503
+    - path: models/model_logistic.pkl
+      hash: md5
+      md5: d44c16314f4504c28885bbf094800d7f
+      size: 25954
+    - path: params.yaml
+      hash: md5
+      md5: 3b177fc09b7ecd78a0ee0d462d3b9249
+      size: 4173
+    - path: reports/run_id_logistic.txt
+      hash: md5
+      md5: 84136265f39325bb3ac63a54e3deb357
+      size: 32
+    outs:
+    - path: reports/evaluate_results_logistic.json
+      hash: md5
+      md5: efb93563e98aefa40068981c0cd8026f
+      size: 1866
+  evaluate_randomforest:
+    cmd: python -m eq18_turkish_music_mlops.evaluate --model randomforest
+    deps:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: f2819a404591e51d79f353c0ba528769
+      size: 26648
+    - path: eq18_turkish_music_mlops/evaluate.py
+      hash: md5
+      md5: c176678b063e0c5cfd91fdf6f24d9e33
+      size: 11838
+    - path: models/label_encoder.pkl
+      hash: md5
+      md5: 20d5afd40c640dc20d075b6c80d4205b
+      size: 503
+    - path: models/model_randomforest.pkl
+      hash: md5
+      md5: 70bf2b9e4d2b22052b9c82e70a3c2ca2
+      size: 2122699
+    - path: params.yaml
+      hash: md5
+      md5: 3b177fc09b7ecd78a0ee0d462d3b9249
+      size: 4173
+    - path: reports/run_id_randomforest.txt
+      hash: md5
+      md5: 437abfab4bd8c4c703bded0fb8688f9b
+      size: 32
+    outs:
+    - path: reports/evaluate_results_randomforest.json
+      hash: md5
+      md5: 841d1e95473172b1e1c9c08bdc7e9786
+      size: 1884
+  evaluate_xgboost:
+    cmd: python -m eq18_turkish_music_mlops.evaluate --model xgboost
+    deps:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: f2819a404591e51d79f353c0ba528769
+      size: 26648
+    - path: eq18_turkish_music_mlops/evaluate.py
+      hash: md5
+      md5: c176678b063e0c5cfd91fdf6f24d9e33
+      size: 11838
+    - path: models/label_encoder.pkl
+      hash: md5
+      md5: 20d5afd40c640dc20d075b6c80d4205b
+      size: 503
+    - path: models/model_xgboost.pkl
+      hash: md5
+      md5: d209754e49feb7d433222c196673293d
+      size: 1753927
+    - path: params.yaml
+      hash: md5
+      md5: 3b177fc09b7ecd78a0ee0d462d3b9249
+      size: 4173
+    - path: reports/run_id_xgboost.txt
+      hash: md5
+      md5: 2ee9b48a90fd40bdb3d2f8bfa8833da9
+      size: 32
+    outs:
+    - path: reports/evaluate_results_xgboost.json
+      hash: md5
+      md5: 5fe1e7677b599bdd67f7e5159ad59efe
+      size: 1894

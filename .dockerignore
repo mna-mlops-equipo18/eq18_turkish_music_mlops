@@ -1,0 +1,15 @@
+# Git
+.git/
+.gitignore
+
+# DVC
+.dvc/cache
+.dvc/tmp
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# MLflow
+mlruns/

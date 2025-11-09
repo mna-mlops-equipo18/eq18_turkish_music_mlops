@@ -1,0 +1,3 @@
+# Todos los reportes generados por el pipeline
+*.pkl
+*.joblib

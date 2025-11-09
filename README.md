@@ -79,124 +79,138 @@ Estructura basada en **Cookiecutter Data Science**. Control de código con **Git
 * `requirements.txt` — dependencias Python.
 * `README.md` — este archivo.
 
-## Requisitos
 
-* Python 3.13
-* virtualenv
-* Git
-* `dvc[azure]` instalado
-* `ACCOUNT_KEY` de la cuenta de Azure Storage (compartida por otro medio)
-* Nota: Este README muestra comandos para Windows
+## 1. Requisitos
 
-## Pasos para clonar y obtener datos
-
-Este repositorio es **privado**, por lo que cada integrante debe autenticarse en GitHub antes de poder clonarlo.
-
-### 1. Generar un Personal Access Token (PAT) en GitHub
-
-1. Entra a [GitHub > Settings > Developer settings > Personal access tokens > Tokens (classic)](https://github.com/settings/tokens).
-2. Haz clic en **Generate new token (classic)**.
-3. Asigna un nombre (ej. `eq18_turkish_music_mlops`).
-4. Selecciona al menos el permiso **repo**.
-5. Crea el token y **cópialo** (se muestra solo una vez).
-
-> ⚠️ Guarda tu PAT en un lugar seguro. Este token reemplaza tu contraseña en Git.
+| Requisito | Descripción |
+|------------|-------------|
+| **Python** | Recomendado: `3.11` (verificado en `pyproject.toml`) |
+| **RAM** | **Mínimo 4GB.** El `pip install` fallará con menos. |
+| **Disco** | Mínimo 30GB de almacenamiento. |
+| **Git** | Para clonar el repositorio. |
+| **Azure Storage Key** | Archivo `azure_key.txt` con la *Account Key* de tu contenedor. |
+| *(Opcional)* **Swap** | **Altamente recomendado** si la RAM es ≤8GB para evitar `Killed` errors. |
+| *(Opcional)* **Servidor MLflow** | VM con los requisitos de RAM/Disco y puerto `5000` abierto. |
 
 ---
 
-### 2. Clonar el repositorio
+## Paso 1: Clonar el Repositorio
 
-En una terminal (PowerShell o CMD):
- 
 ```bash
-git clone https://github.com/maurocastill/eq18_turkish_music_mlops.git
+# Clona el repositorio
+git clone <URL_DE_TU_REPOSITORIO>
+
+# Entra a la carpeta
 cd eq18_turkish_music_mlops
+
+# Cambiar a la rama development
+git checkout development
+
+# 1. Crea el entorno 
+python3 -m venv .venv
+
+# 2. Activar el entorno virtual
+source .venv/bin/activate
+
 ```
-
-Cuando se pida usuario/contraseña:
-
-* **Usuario** = tu nombre de usuario de GitHub.
-* **Contraseña** = pega el PAT que generaste.
-
-##  Flujo de trabajo en el proyecto
-
-Cada integrante del equipo debe de trabajar **en su propia rama** para asi mantener limpio el historial del proyecto y evitar problemas de integración de código.
-
-### Guía rápida 
-1. Actualiza tu rama local principal:
-   ```bash
-   git checkout main
-   git pull origin main
-   git checkout -b <nombre_de_rama>
-   
-   *ejemplo: mariofonsecabranch*
-
-2. Para subir cambios nuevos deben subirlo con su rama
-   ```bash
-   git add .
-   git commit -m "Descripción breve del cambio que se hizo"
-   git push origin <nombre_de_rama>
-
-3. Una vez que hayas subido tus cambios. Crear un "Pull Request" en GitHub"
-
-    * Entra a [GitHub > Pull requests](https://github.com/maurocastill/eq18_turkish_music_mlops/pulls).
-    * Hacer click en el botón "New pull request"
-    * Seleccionar base: development
-    * Seleccionar compare: main
-    * Hacer click en el botón "Create pull request"
-
 ---
 
-### 3. Configurar credenciales para no ingresarlas siempre (Windows recomendado)
-
-Ejecuta una vez:
-
+## Paso 2. Configuración del Entorno 
 ```bash
-git config --global credential.helper manager
+
+# 1. Crea el entorno 
+python3 -m venv .venv
+
+# 2. Activar entorno virtual
+source .venv/bin/activate
+
 ```
-
-Esto guarda tu usuario y PAT en el **Administrador de Credenciales de Windows**.
-De ahora en adelante, `git push` y `git pull` no volverán a pedir tu token.
-
 ---
 
-### 4. Preparar entorno Python
-
-1. Activa el entorno virtual compartido `env-mlops-313` (o crea uno nuevo con Python 3.13).
-2. Instala dependencias:
+## Paso 3. Crear Swap
 
 ```bash
+
+sudo fallocate -l 4G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+
+```
+---
+
+## Paso 4. Instalar Dependencias
+Recomendamos altamente empezar a instalar lo mas pesado al principio.
+
+```bash
+
+pip install torch
+pip install pandas numpy scikit-learn
+pip install "dvc[azure]" mlflow xgboost
 pip install -r requirements.txt
-```
 
+```
 ---
 
-### 5. Configurar acceso a datos en Azure
-
-Cada integrante debe configurar la `ACCOUNT_KEY` localmente.
+## Paso 5. Conectar DVC a Azure
+Teniendo en cuenta que ya tienes tu llave (azure_key.txt) en tu maquina.
 
 ```bash
-dvc remote modify azure-storage account_key "AZURE_KEY" --local
-```
 
+# moveremos la llave al root del proyecto
+mv /ruta/a/tu/azure_key.txt .
+AZURE_KEY_VALUE=$(cat azure_key.txt)
+dvc remote modify azure-storage account_key "$AZURE_KEY_VALUE" --local
+
+```
 ---
 
-### 6. Descargar los datos con DVC
-
-Ejecuta:
+## Paso 6. Descargar los datos
 
 ```bash
+
 dvc pull
+
 ```
+---
 
-Al terminar verás `data/raw/*.csv` descargados desde Azure.
-
---------
-
-### 7. Agregar datos a DVC
-
-Ejecuta:
+## Paso 7. Ejecutar pipelines
+Primero correremos un servidor de MLflow para poder ver todos los experimentos
 
 ```bash
-dvc push
+nohup mlflow ui \
+    --backend-store-uri sqlite:///mlflow-server-data/mlflow.db \
+    --default-artifact-root ./mlflow-server-data/artifacts \
+    --host 0.0.0.0 \
+    --port 5000 \
+    --allowed-hosts "*" \
+    > mlflow-server.log 2>&1 &
 ```
+---
+
+## Paso 8. Configurar nuestra terminal al servidor de MLflow
+
+```bash
+export MLFLOW_TRACKING_URI="http://127.0.0.1:5000"
+```
+---
+
+## Paso 9. Ejecutar pipeline
+
+```bash
+dvc repro
+```
+---
+
+## Paso 10. Guardar trabajo
+
+```bash
+# 1. Sube los modelos/reportes nuevos a nuestro bucket de Azure
+dvc push
+
+# 2. Guardar punteros en git
+git add dvc.lock reports/.gitignore
+git commit -m "Pipeline completo ejecutado y modelos actualizados"
+git push origin development
+```
+---
