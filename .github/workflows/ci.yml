@@ -1,0 +1,42 @@
+name: Integracion Continuca 
+on:
+  push:
+  pull_request:
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Instalar dependencias
+        run: |
+          sudo fallocate -l 4G /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          pip install torch pandas numpy scikit-learn
+          pip install "dvc[azure]" mlflow xgboost
+          pip install pytest pytest-dvc httpx fastapi uvicorn
+          pip install -r requirements.txt
+      
+      - name: Configurar DVC
+        env:
+          AZURE_KEY: ${{ secrets.AZURE_PROJECT_KEY }} # <-- NECESITAS ESTE SECRETO
+        run: |
+          dvc remote modify azure-storage account_key "$AZURE_KEY" --local
+
+      - name: Descargar datos
+        run: dvc pull
+        
+      - name: Ejecutar Pruebas 
+        run: pytest -q tests/
+      
+      - name: Construid imagen Docker
+        run: docker build -t ml-service-test:latest .
