@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  api:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: ml-service:latest
+    container_name: ml-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models
+      - ./reports:/app/reports
+    restart: always
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.13.0
+    container_name: mlflow-dashboard
+    ports:
+      - "5000:5000" 
+    volumes:
+      - ./mlflow-server-data:/mlflow-server-data
+    command: >
+      mlflow ui
+      --backend-store-uri sqlite:////mlflow-server-data/mlflow.db
+      --default-artifact-root /mlflow-server-data/artifacts
+      --host 0.0.0.0
+      --port 5000
+      --allowed-hosts "*"
+    restart: always

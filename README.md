@@ -89,7 +89,7 @@ Estructura basada en **Cookiecutter Data Science**. Control de código con **Git
 | **Disco** | Mínimo 30GB de almacenamiento. |
 | **Git** | Para clonar el repositorio. |
 | **Azure Storage Key** | Archivo `azure_key.txt` con la *Account Key* de tu contenedor. |
-| *(Opcional)* **Swap** | **Altamente recomendado** si la RAM es ≤8GB para evitar `Killed` errors. |
+| *(OBLIGATORIO)* **Swap** | **Altamente recomendado** si la RAM es ≤8GB para evitar `Killed` errors. |
 | *(Opcional)* **Servidor MLflow** | VM con los requisitos de RAM/Disco y puerto `5000` abierto. |
 
 ---
@@ -105,13 +105,6 @@ cd eq18_turkish_music_mlops
 
 # Cambiar a la rama development
 git checkout development
-
-# 1. Crea el entorno 
-python3 -m venv .venv
-
-# 2. Activar el entorno virtual
-source .venv/bin/activate
-
 ```
 ---
 
