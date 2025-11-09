@@ -33,7 +33,7 @@ jobs:
           dvc remote modify azure-storage account_key "$AZURE_KEY" --local
 
       - name: Descargar datos
-        run: dvc pull
+        run: dvc pull data
         
       - name: Ejecutar Pruebas 
         run: pytest -q tests/
