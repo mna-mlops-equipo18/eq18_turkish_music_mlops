@@ -25,4 +25,3 @@ pathlib
 typing
 joblib
 uvicorn
-pytest-dvc
