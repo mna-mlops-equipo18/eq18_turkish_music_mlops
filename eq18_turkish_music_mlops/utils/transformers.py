@@ -101,11 +101,9 @@ class OutlierIQRTransformer(BaseEstimator, TransformerMixin):
         Q3 = np.percentile(X, 75, axis=0)
         IQR = Q3 - Q1
         
-        # Calcular límites
         self.lower = Q1 - self.factor * IQR
         self.upper = Q3 + self.factor * IQR
         
-        # Log información útil
         n_features = X.shape[1]
         logger.debug(f"OutlierIQRTransformer fitted con factor={self.factor}")
         logger.debug(f"  Features: {n_features}")

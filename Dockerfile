@@ -16,9 +16,12 @@ COPY . .
 
 ARG AZURE_PROJECT_KEY
 RUN dvc remote modify azure-storage account_key "$AZURE_PROJECT_KEY" --local && \
-    dvc pull models data/processed -f && \
-    swapoff /swapfile && \
-    rm /swapfile
+    dvc pull -f \
+      prepare \
+      train_logistic \
+      train_randomforest \
+      train_xgboost && \
+    ...
 
 FROM python:3.11-slim
 
