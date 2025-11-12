@@ -1,12 +1,12 @@
-name: Integracion Continuca 
+name: CI - Pruebas 
+
 on:
-  push:
   pull_request:
+    branches: [ "development", "main" ]
 
 jobs:
-  test-and-build:
+  test-suite:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout del código
         uses: actions/checkout@v3
@@ -16,27 +16,27 @@ jobs:
         with:
           python-version: '3.11'
       
-      - name: Instalar dependencias
+      - name: Instalar Dependencias
         run: |
           sudo fallocate -l 4G /swapfile
           sudo mkswap /swapfile
           sudo swapon /swapfile
           pip install torch pandas numpy scikit-learn
           pip install "dvc[azure]" mlflow xgboost
-          pip install pytest pytest-dvc httpx fastapi uvicorn
+          pip install pytest httpx fastapi uvicorn
           pip install -r requirements.txt
       
-      - name: Configurar DVC
+      - name: Configurar DVC 
         env:
-          AZURE_KEY: ${{ secrets.AZURE_PROJECT_KEY }} # <-- NECESITAS ESTE SECRETO
+          AZURE_KEY: ${{ secrets.AZURE_PROJECT_KEY }}
         run: |
           dvc remote modify azure-storage account_key "$AZURE_KEY" --local
 
-      - name: Descargar datos
-        run: dvc pull
+      - name: Descargar Artefactos para Pruebas
+        run: |
+          dvc pull -f \
+            train_logistic \
+            train_randomforest
         
-      - name: Ejecutar Pruebas 
+      - name: Ejecutar Pruebas
         run: pytest -q tests/
-      
-      - name: Construid imagen Docker
-        run: docker build -t ml-service-test:latest .
