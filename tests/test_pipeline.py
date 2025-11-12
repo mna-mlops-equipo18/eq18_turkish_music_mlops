@@ -12,6 +12,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # 2. (CRÍTICO) Importa tus transformers personalizados
+# 'joblib.load()' los necesita en el scope para poder cargar el .pkl
 from eq18_turkish_music_mlops.utils.transformers import OutlierIQRTransformer, clean_finite_values
 
 # --- Configuración de la Prueba ---
