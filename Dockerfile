@@ -1,22 +1,36 @@
+FROM python:3.11-slim as builder
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y git && \
+    fallocate -l 4G /swapfile && \
+    mkswap /swapfile && \
+    swapon /swapfile
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir torch pandas numpy scikit-learn
+RUN pip install --no-cache-dir "dvc[azure]" mlflow xgboost
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+ARG AZURE_PROJECT_KEY
+RUN dvc remote modify azure-storage account_key "$AZURE_PROJECT_KEY" --local && \
+    dvc pull models data/processed -f && \
+    swapoff /swapfile && \
+    rm /swapfile
+
 FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 
-RUN fallocate -l 4G /swapfile && \
-    mkswap /swapfile && \
-    swapon /swapfile && \
-    pip install --no-cache-dir torch pandas numpy scikit-learn && \
-    pip install --no-cache-dir -r requirements.txt && \
-    swapoff /swapfile && \
-    rm /swapfile
-
-COPY ./models /app/models
-
-COPY ./eq18_turkish_music_mlops /app/eq18_turkish_music_mlops
+COPY --from=builder /app/models /app/models
 
 COPY ./api.py /app/api.py
+COPY ./eq18_turkish_music_mlops /app/eq18_turkish_music_mlops
 
 EXPOSE 8000
 
