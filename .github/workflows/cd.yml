@@ -27,6 +27,6 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: mariofonsecamtz/eq18_turkish_music_mlops:latest # <-- ¡Usa tu usuario y nombre!
+          tags: mariofonsecamtz/eq18_turkish_music_mlops:latest 
           build-args: |
             AZURE_PROJECT_KEY=${{ secrets.AZURE_PROJECT_KEY }}

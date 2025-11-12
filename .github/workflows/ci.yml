@@ -34,7 +34,9 @@ jobs:
 
       - name: Descargar Artefactos para Pruebas
         run: |
-          dvc pull models
+          dvc pull -f \
+            train_logistic \
+            train_randomforest
         
       - name: Ejecutar Pruebas
         run: pytest -q tests/
