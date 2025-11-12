@@ -1,3 +1,5 @@
+# Archivo: tests/test_pipeline.py
+
 import pytest
 import joblib
 import pandas as pd
@@ -5,10 +7,14 @@ import sys
 import os
 from pathlib import Path
 
+# --- Configuración Clave ---
+# 1. Añade el directorio raíz del proyecto al path de Python
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+# 2. (CRÍTICO) Importa tus transformers personalizados
 from eq18_turkish_music_mlops.utils.transformers import OutlierIQRTransformer, clean_finite_values
 
+# --- Configuración de la Prueba ---
 MODEL_PATH = Path("models/model_randomforest.pkl") 
 ENCODER_PATH = Path("models/label_encoder.pkl")
 EXPECTED_CLASSES = {'angry', 'happy', 'relax', 'sad'}
@@ -17,7 +23,6 @@ EXPECTED_CLASSES = {'angry', 'happy', 'relax', 'sad'}
 def sample_data():
     """
     Crea un dato de prueba (un diccionario) usando los 50 NOMBRES DE COLUMNA REALES.
-    Estos nombres se extrajeron del log de error de CI.
     """
     features = {
         '_MFCC_Mean_10': 0.0, '_AttackTime_Mean': 0.0, '_Roughness_Slope': 0.0,
@@ -33,6 +38,7 @@ def sample_data():
         '_Chromagram_Mean_10': 0.0, '_MFCC_Mean_11': 0.0, '_MFCC_Mean_3': 0.0,
         '_EntropyofSpectrum_Mean': 0.0, '_Brightness_Mean': 0.0, '_MFCC_Mean_8': 0.0,
         '_MFCC_Mean_13': 0.0, '_HarmonicChangeDetectionFunction_PeriodEntropy': 0.0, '_Chromagram_Mean_12': 0.0,
+        '_AttackTime_Slope': 0.0, '_Chromagram_Mean_1': 0.0, 
         '_HarmonicChangeDetectionFunction_PeriodFreq': 0.0, '_HarmonicChangeDetectionFunction_PeriodAmp': 0.0,
         '_Fluctuation_Mean': 0.0, '_MFCC_Mean_2': 0.0, '_Eventdensity_Mean': 0.0,
         '_Spectralflatness_Mean': 0.0, '_Chromagram_Mean_9': 0.0, '_MFCC_Mean_6': 0.0,
@@ -59,7 +65,6 @@ def test_model_loading():
 def test_prediction_integration(sample_data):
     """
     Prueba de integración: carga el pipeline y realiza una predicción.
-    Valida que (datos) -> (pipeline) -> (predicción) funciona.
     """
     if not MODEL_PATH.exists() or not ENCODER_PATH.exists():
         pytest.skip("Saltando prueba de predicción porque los modelos no fueron encontrados.")
@@ -68,10 +73,7 @@ def test_prediction_integration(sample_data):
     encoder = joblib.load(ENCODER_PATH)
 
     input_df = pd.DataFrame([sample_data])
-    
     pred_encoded = model.predict(input_df)
-    
     pred_class = encoder.inverse_transform(pred_encoded)
     
     assert pred_class[0] in EXPECTED_CLASSES, f"La predicción '{pred_class[0]}' no es una clase válida."
-    print(f"\nPrueba de integración exitosa: predicción = {pred_class[0]}")
