@@ -10,8 +10,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN dvc init --no-scm
-
 RUN --mount=type=secret,id=AZURE_PROJECT_KEY \
     dvc remote modify azure-storage account_key "$(cat /run/secrets/AZURE_PROJECT_KEY)" --local && \
     dvc pull -f prepare train_logistic train_randomforest train_xgboost
