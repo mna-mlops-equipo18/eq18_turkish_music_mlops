@@ -17,7 +17,6 @@ RUN --mount=type=secret,id=AZURE_PROJECT_KEY sh -c "\
     dvc pull -f prepare train_logistic train_randomforest train_xgboost \
 "
 
-
 FROM python:3.11-slim
 
 WORKDIR /app
