@@ -2,7 +2,7 @@ name: CD - Build y Publicación de Imagen Docker
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "staging" ]
 
 jobs:
   build-and-push:
@@ -13,6 +13,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  
+          lfs: true        
 
       - name: Configurar Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -29,7 +30,9 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: mariofonsecamtz/eq18_turkish_music_mlops:latest
+          provenance: false 
+          tags: |
+            mariofonsecamtz/eq18_turkish_music_mlops:latest
           secrets: |
             "AZURE_PROJECT_KEY=${{ secrets.AZURE_PROJECT_KEY }}"
           cache-from: type=registry,ref=mariofonsecamtz/eq18_turkish_music_mlops:buildcache
