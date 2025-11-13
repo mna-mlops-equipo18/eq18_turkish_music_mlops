@@ -14,17 +14,14 @@ RUN grep -v "^torch" requirements.txt > requirements_filtered.txt && \
     pip install --no-cache-dir -r requirements_filtered.txt && \
     rm requirements_filtered.txt
 
-RUN python -c "import dvc_azure; import torch; print(' Dependencias OK')"
+RUN python -c "import dvc_azure; import torch; print('Dependencias OK')"
 
-COPY .dvc /app/.dvc
-COPY dvc.yaml /app/dvc.yaml
-COPY dvc.lock /app/dvc.lock
+COPY . .
 
 RUN --mount=type=secret,id=AZURE_PROJECT_KEY \
     set -e && \
     echo "🔧 Configurando DVC con Azure..." && \
-    export AZURE_KEY=$(cat /run/secrets/AZURE_PROJECT_KEY) && \
-    dvc remote modify azure-storage account_key "$AZURE_KEY" --local && \
+    dvc remote modify azure-storage account_key "$(cat /run/secrets/AZURE_PROJECT_KEY)" --local && \
     echo "  Descargando artefactos DVC..." && \
     dvc pull -v prepare train_logistic train_randomforest train_xgboost && \
     echo " Artefactos descargados exitosamente"
