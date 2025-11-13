@@ -11,8 +11,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 RUN --mount=type=secret,id=AZURE_PROJECT_KEY \
+    dvc init --no-scm -f && \
+    dvc remote add -d azure-storage azure://<ruta-en-azure> && \
     dvc remote modify azure-storage account_key "$(cat /run/secrets/AZURE_PROJECT_KEY)" --local && \
     dvc pull -f prepare train_logistic train_randomforest train_xgboost
+
 
 FROM python:3.11-slim
 
