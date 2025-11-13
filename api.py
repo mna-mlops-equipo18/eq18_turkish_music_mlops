@@ -6,10 +6,8 @@ from pydantic import BaseModel
 from typing import Dict
 from pathlib import Path
 
-# (CRÍTICO) Importa tus transformers personalizados
 from eq18_turkish_music_mlops.utils.transformers import clean_finite_values, OutlierIQRTransformer
 
-# --- Cargar Artefactos ---
 MODEL_PATH = Path("models/model_randomforest.pkl")
 ENCODER_PATH = Path("models/label_encoder.pkl")
 model = None
@@ -28,15 +26,13 @@ def load_artifacts():
     except Exception as e:
         print(f"Error al cargar artefactos: {e}")
 
-# --- Esquemas de Pydantic ---
 class FeaturesPayload(BaseModel):
     features: Dict[str, float]
 
 class PredictionResponse(BaseModel):
     emotion_predicted: str
     model_version: str = "randomforest_v1"
-
-# --- Inicializar la App de FastAPI ---
+    
 app = FastAPI(
     title="API de Clasificación de Emociones",
     description="Servicio de MLOps para predicción de emociones musicales.",

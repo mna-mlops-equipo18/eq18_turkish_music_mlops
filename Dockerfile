@@ -21,10 +21,10 @@ COPY . .
 RUN --mount=type=secret,id=AZURE_PROJECT_KEY \
     set -e && \
     
-    echo " Configurando DVC en modo 'no-scm'..." && \
+    echo "Configurando DVC en modo 'no-scm'..." && \
     dvc config core.no_scm true && \
     
-    echo " Configurando DVC con Azure..." && \
+    echo "Configurando DVC con Azure..." && \
     dvc remote modify azure-storage account_key "$(cat /run/secrets/AZURE_PROJECT_KEY)" --local && \
     echo "  Descargando artefactos DVC..." && \
     dvc pull -v prepare train_logistic train_randomforest train_xgboost && \
