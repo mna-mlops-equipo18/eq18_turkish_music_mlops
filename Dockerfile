@@ -20,7 +20,11 @@ COPY . .
 
 RUN --mount=type=secret,id=AZURE_PROJECT_KEY \
     set -e && \
-    echo "🔧 Configurando DVC con Azure..." && \
+    
+    echo "Configurando DVC en modo 'no-scm'..." && \
+    dvc config core.no_scm true && \
+    
+    echo "Configurando DVC con Azure..." && \
     dvc remote modify azure-storage account_key "$(cat /run/secrets/AZURE_PROJECT_KEY)" --local && \
     echo "  Descargando artefactos DVC..." && \
     dvc pull -v prepare train_logistic train_randomforest train_xgboost && \
@@ -35,6 +39,7 @@ FROM python:3.11-slim
 WORKDIR /app
 
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 
 COPY --from=builder /app/models /app/models
 COPY --from=builder /app/data/processed /app/data/processed
