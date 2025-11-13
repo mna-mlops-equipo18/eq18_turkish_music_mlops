@@ -3,7 +3,6 @@ flake8
 isort
 mkdocs
 python-dotenv
--e .
 scipy
 seaborn
 dvc
