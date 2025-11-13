@@ -12,6 +12,13 @@ jobs:
       - name: Checkout del código
         uses: actions/checkout@v3
 
+      - name: Configurar Swap
+        run: |
+          sudo fallocate -l 4G /swapfile
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+
       - name: Configurar Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -27,6 +34,6 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: mariofonsecamtz/eq18_turkish_music_mlops:latest 
-          build-args: |
-            AZURE_PROJECT_KEY=${{ secrets.AZURE_PROJECT_KEY }}
+          tags: mariofonsecamtz/eq18_turkish_music_mlops:latest
+          secrets: |
+            "AZURE_PROJECT_KEY=${{ secrets.AZURE_PROJECT_KEY }}"
