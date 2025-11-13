@@ -37,3 +37,6 @@ jobs:
           tags: mariofonsecamtz/eq18_turkish_music_mlops:latest
           secrets: |
             "AZURE_PROJECT_KEY=${{ secrets.AZURE_PROJECT_KEY }}"
+          cache-from: type=registry,ref=mariofonsecamtz/eq18_turkish_music_mlops:buildcache
+          cache-to: type=registry,ref=mariofonsecamtz/eq18_turkish_music_mlops:buildcache,mode=max
+
