@@ -193,3 +193,8 @@ cython_debug/
 # Ignorar carpetas locales de Jupyter y Anaconda
 .virtual_documents/
 anaconda_projects/
+
+# MLflow
+mlruns/
+mlartifacts/
+.mlflow/

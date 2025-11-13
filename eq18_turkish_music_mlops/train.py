@@ -155,14 +155,12 @@ def create_preprocessing_pipeline(numeric_cols, params, random_state):
 
     # Pipeline numérico
     numeric_pipeline = Pipeline([
-        ("imputer", SimpleImputer(strategy="median")),
-        ("cleanup1", FunctionTransformer(clean_finite_values, validate=False)),
-        ("power", PowerTransformer(method="yeo-johnson")),
-        ("cleanup2", FunctionTransformer(clean_finite_values, validate=False)),
+        ("outliers", OutlierIQRTransformer(factor=iqr_factor)),
+        ("imputer", SimpleImputer(strategy=imputer_strategy)),
+        ("power", PowerTransformer(method=power_transform_method)),
+        ("clipper", FunctionTransformer(clean_finite_values, validate=False)),  # ← nuevo debido a valores infinitos generados por power sensibles en RandomForest.
         ("scaler", StandardScaler()),
-        ("cleanup3", FunctionTransformer(clean_finite_values, validate=False)),
-        ("pca", PCA(n_components=0.95, random_state=42)),
-        ("cleanup4", FunctionTransformer(clean_finite_values, validate=False)),
+        ("pca", PCA(n_components=pca_variance, random_state=random_state)),
     ])
     
     preprocessor = ColumnTransformer([

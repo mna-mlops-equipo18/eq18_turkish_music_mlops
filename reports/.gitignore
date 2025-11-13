@@ -1,2 +1,5 @@
 # Todos los reportes generados por el pipeline
 *.json
+/run_id_logistic.txt
+/run_id_randomforest.txt
+/run_id_xgboost.txt
