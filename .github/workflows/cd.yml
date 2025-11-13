@@ -3,7 +3,7 @@ name: CD - Build y Publicación de Imagen Docker
 on:
   push:
     branches: [ "staging" ]
-  workflow_dispatch:  # Permite ejecución manual
+  workflow_dispatch:  
 
 env:
   IMAGE_NAME: mariofonsecamtz/eq18_turkish_music_mlops
