@@ -32,7 +32,7 @@ class FeaturesPayload(BaseModel):
 class PredictionResponse(BaseModel):
     emotion_predicted: str
     model_version: str = "randomforest_v1"
-    
+
 app = FastAPI(
     title="API de Clasificación de Emociones",
     description="Servicio de MLOps para predicción de emociones musicales.",
@@ -49,6 +49,20 @@ def health_check():
     return {"status": "ok"}
 
 @app.post("/predict", response_model=PredictionResponse)
+def predict_emotion(payload: FeaturesPayload):
+    """
+    Endpoint de predicción. 
+    Recibe un JSON con las 50 features y devuelve la emoción.
+    """
+    if model is None:
+        return {"error": "Modelo no cargado. Revisa los logs del servidor."}
+
+    input_df = pd.DataFrame([payload.features])
+    pred_encoded = model.predict(input_df)
+    pred_class = label_encoder.inverse_transform(pred_encoded)
+    return PredictionResponse(emotion_predicted=pred_class[0])
+
+@app.post("/predict2", response_model=PredictionResponse)
 def predict_emotion(payload: FeaturesPayload):
     """
     Endpoint de predicción. 
