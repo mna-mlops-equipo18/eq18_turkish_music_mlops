@@ -17,7 +17,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          # REMOVIDO: cache: 'pip' 
 
       - name: Liberar espacio en disco
         run: |
@@ -72,6 +71,7 @@ jobs:
 
       - name: Descargar Artefactos
         run: |
+          # Solo bajamos los modelos para las pruebas
           dvc pull -v train_logistic train_randomforest
           echo "✓ Artefactos descargados"
         
