@@ -3,17 +3,36 @@ name: CD - Build y Publicación de Imagen Docker
 on:
   push:
     branches: [ "staging" ]
+  workflow_dispatch:  # Permite ejecución manual
+
+env:
+  IMAGE_NAME: mariofonsecamtz/eq18_turkish_music_mlops
+  AZURE_CONTAINER: turkis_music_emotion_original
+  AZURE_ACCOUNT: turkishmusicdata
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout del código
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  
-          lfs: true        
+          fetch-depth: 0
+          lfs: true
+
+      - name: Validar archivos DVC requeridos
+        run: |
+          if [ ! -f dvc.yaml ]; then
+            echo " ERROR: dvc.yaml no encontrado"
+            exit 1
+          fi
+          if [ ! -f dvc.lock ]; then
+            echo " ERROR: dvc.lock no encontrado"
+            exit 1
+          fi
+          echo "✓ Archivos DVC validados"
 
       - name: Configurar Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -30,10 +49,39 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          provenance: false 
+          provenance: false
           tags: |
             mariofonsecamtz/eq18_turkish_music_mlops:latest
+          build-args: |
+            AZURE_CONTAINER_NAME=${{ env.AZURE_CONTAINER }}
+            AZURE_STORAGE_ACCOUNT=${{ env.AZURE_ACCOUNT }}
           secrets: |
-            "AZURE_PROJECT_KEY=${{ secrets.AZURE_PROJECT_KEY }}"
+            AZURE_PROJECT_KEY=${{ secrets.AZURE_PROJECT_KEY }}
           cache-from: type=registry,ref=mariofonsecamtz/eq18_turkish_music_mlops:buildcache
           cache-to: type=registry,ref=mariofonsecamtz/eq18_turkish_music_mlops:buildcache,mode=max
+
+      - name: Validar imagen construida
+        run: |
+          docker pull mariofonsecamtz/eq18_turkish_music_mlops:latest
+          docker inspect mariofonsecamtz/eq18_turkish_music_mlops:latest
+          echo "✓ Imagen validada exitosamente"
+
+      - name: Test de humo en contenedor
+        run: |
+          docker run --rm -d \
+            --name test-container \
+            -p 8000:8000 \
+            mariofonsecamtz/eq18_turkish_music_mlops:latest
+          
+          sleep 15
+          
+          # Validar que el contenedor está corriendo
+          if ! docker ps | grep -q test-container; then
+            echo " ERROR: Contenedor no está corriendo"
+            docker logs test-container
+            exit 1
+          fi
+          
+          # Cleanup
+          docker stop test-container || true
+          echo "✓ Test de humo exitoso"
