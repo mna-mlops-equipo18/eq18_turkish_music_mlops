@@ -29,7 +29,7 @@ RUN --mount=type=secret,id=AZURE_PROJECT_KEY \
     dvc init --no-scm -f && \
     echo "Configurando Azure Storage..." && \
     export AZURE_KEY=$(cat /run/secrets/AZURE_PROJECT_KEY) && \
-    dvc remote modify azure-storage account_key "$AZURE_KEY" --local && \
+    dvc remote modify azure-storage account_key "$AZURE_PROJECT_KEY" --local && \
     echo "Descargando artefactos DVC..." && \
     dvc pull -v prepare train_logistic train_randomforest train_xgboost && \
     echo " Artefactos descargados exitosamente"
