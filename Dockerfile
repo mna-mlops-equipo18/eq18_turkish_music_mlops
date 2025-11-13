@@ -1,5 +1,3 @@
-
-
 FROM python:3.11-slim AS builder
 
 WORKDIR /app
@@ -9,7 +7,6 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
-
 RUN pip install --no-cache-dir "dvc[azure]"
 
 COPY requirements.txt .
@@ -25,18 +22,16 @@ COPY dvc.lock /app/dvc.lock
 
 RUN --mount=type=secret,id=AZURE_PROJECT_KEY \
     set -e && \
-    echo "Inicializando DVC sin Git..." && \
-    dvc init --no-scm && \
-    echo "Configurando Azure Storage..." && \
+    echo "🔧 Configurando DVC con Azure..." && \
     export AZURE_KEY=$(cat /run/secrets/AZURE_PROJECT_KEY) && \
     dvc remote modify azure-storage account_key "$AZURE_KEY" --local && \
-    echo "Descargando artefactos DVC..." && \
+    echo "  Descargando artefactos DVC..." && \
     dvc pull -v prepare train_logistic train_randomforest train_xgboost && \
     echo " Artefactos descargados exitosamente"
 
 RUN test -d models || { echo " ERROR: models/ no existe"; exit 1; } && \
     test -d data/processed || { echo " ERROR: data/processed/ no existe"; exit 1; } && \
-    echo " Artefactos validados"
+    echo " Artefactos validados correctamente"
 
 FROM python:3.11-slim
 
