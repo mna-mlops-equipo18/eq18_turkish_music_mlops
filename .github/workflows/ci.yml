@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip'
+          # REMOVIDO: cache: 'pip' 
 
       - name: Liberar espacio en disco
         run: |
@@ -51,7 +51,6 @@ jobs:
 
       - name: Instalar Requirements (sin torch)
         run: |
-          # Instalar requirements.txt excluyendo torch (ya instalado)
           grep -v "^torch" requirements.txt > requirements_no_torch.txt || true
           pip install --no-cache-dir -r requirements_no_torch.txt || true
           echo "✓ Requirements instalados"
@@ -65,7 +64,7 @@ jobs:
           AZURE_KEY: ${{ secrets.AZURE_PROJECT_KEY }}
         run: |
           if [ -z "$AZURE_KEY" ]; then
-            echo "❌ ERROR: AZURE_PROJECT_KEY no configurado"
+            echo " ERROR: AZURE_PROJECT_KEY no configurado"
             exit 1
           fi
           dvc remote modify azure-storage account_key "$AZURE_KEY" --local
