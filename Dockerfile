@@ -26,10 +26,10 @@ COPY dvc.lock /app/dvc.lock
 RUN --mount=type=secret,id=AZURE_PROJECT_KEY \
     set -e && \
     echo "Inicializando DVC sin Git..." && \
-    dvc init --no-scm -f && \
+    dvc init --no-scm && \
     echo "Configurando Azure Storage..." && \
     export AZURE_KEY=$(cat /run/secrets/AZURE_PROJECT_KEY) && \
-    dvc remote modify azure-storage account_key "$AZURE_PROJECT_KEY" --local && \
+    dvc remote modify azure-storage account_key "$AZURE_KEY" --local && \
     echo "Descargando artefactos DVC..." && \
     dvc pull -v prepare train_logistic train_randomforest train_xgboost && \
     echo " Artefactos descargados exitosamente"
