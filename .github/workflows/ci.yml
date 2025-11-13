@@ -7,36 +7,74 @@ on:
 jobs:
   test-suite:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+
     steps:
       - name: Checkout del código
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Configurar Python 3.11
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      
-      - name: Instalar Dependencias
+
+      - name: Liberar espacio en disco
         run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          sudo apt-get clean
+          df -h
+
+      - name: Configurar Swap
+        run: |
+          sudo swapoff -a
           sudo fallocate -l 4G /swapfile
+          sudo chmod 600 /swapfile
           sudo mkswap /swapfile
           sudo swapon /swapfile
-          pip install torch pandas numpy scikit-learn
-          pip install "dvc[azure]" mlflow xgboost
-          pip install pytest httpx fastapi uvicorn
-          pip install -r requirements.txt
+          free -h
+
+      - name: Instalar PyTorch CPU (ligero)
+        run: |
+          pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+          echo "✓ PyTorch CPU instalado"
+
+      - name: Instalar Dependencias Core
+        run: |
+          pip install --no-cache-dir pandas numpy scikit-learn
+          pip install --no-cache-dir "dvc[azure]" xgboost
+          pip install --no-cache-dir pytest httpx fastapi uvicorn
+          echo "✓ Dependencias instaladas"
+
+      - name: Instalar Requirements (sin torch)
+        run: |
+          grep -v "^torch" requirements.txt > requirements_no_torch.txt || true
+          pip install --no-cache-dir -r requirements_no_torch.txt || true
+          echo "✓ Requirements instalados"
+
+      - name: Verificar DVC Azure
+        run: |
+          python -c "import dvc_azure; print('✓ dvc-azure OK')"
       
       - name: Configurar DVC 
         env:
           AZURE_KEY: ${{ secrets.AZURE_PROJECT_KEY }}
         run: |
+          if [ -z "$AZURE_KEY" ]; then
+            echo " ERROR: AZURE_PROJECT_KEY no configurado"
+            exit 1
+          fi
           dvc remote modify azure-storage account_key "$AZURE_KEY" --local
+          echo "✓ DVC configurado"
 
-      - name: Descargar Artefactos para Pruebas
+      - name: Descargar Artefactos
         run: |
-          dvc pull -f \
-            train_logistic \
-            train_randomforest
+          # Solo bajamos los modelos para las pruebas
+          dvc pull -v train_logistic train_randomforest
+          echo "✓ Artefactos descargados"
         
       - name: Ejecutar Pruebas
-        run: pytest -q tests/
+        run: |
+          pytest tests/ -v --tb=short

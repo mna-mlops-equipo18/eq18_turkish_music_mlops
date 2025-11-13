@@ -3,10 +3,9 @@ flake8
 isort
 mkdocs
 python-dotenv
--e .
 scipy
 seaborn
-dvc
+dvc[azure]>=3.0.0
 cookiecutter-data-science
 pytest
 fastapi
