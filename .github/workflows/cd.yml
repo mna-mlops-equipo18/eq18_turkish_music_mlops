@@ -2,7 +2,7 @@ name: CD - Build y Publicación de Imagen Docker
 
 on:
   push:
-    branches: [ "development" ]
+    branches: [ "staging" ]
 
 jobs:
   build-and-push:
