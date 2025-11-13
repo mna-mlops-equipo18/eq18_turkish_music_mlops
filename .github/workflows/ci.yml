@@ -1,0 +1,42 @@
+name: CI - Pruebas 
+
+on:
+  pull_request:
+    branches: [ "development", "main" ]
+
+jobs:
+  test-suite:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Instalar Dependencias
+        run: |
+          sudo fallocate -l 4G /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          pip install torch pandas numpy scikit-learn
+          pip install "dvc[azure]" mlflow xgboost
+          pip install pytest httpx fastapi uvicorn
+          pip install -r requirements.txt
+      
+      - name: Configurar DVC 
+        env:
+          AZURE_KEY: ${{ secrets.AZURE_PROJECT_KEY }}
+        run: |
+          dvc remote modify azure-storage account_key "$AZURE_KEY" --local
+
+      - name: Descargar Artefactos para Pruebas
+        run: |
+          dvc pull -f \
+            train_logistic \
+            train_randomforest
+        
+      - name: Ejecutar Pruebas
+        run: pytest -q tests/
