@@ -3,10 +3,9 @@ flake8
 isort
 mkdocs
 python-dotenv
--e .
 scipy
 seaborn
-dvc
+dvc[azure]>=3.0.0
 cookiecutter-data-science
 pytest
 fastapi
@@ -19,3 +18,9 @@ numpy==2.3.4
 matplotlib==3.10.7
 mlflow
 pytest-cov
+fastapi
+pydantic
+pathlib
+typing
+joblib
+uvicorn
