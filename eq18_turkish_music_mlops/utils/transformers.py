@@ -13,11 +13,9 @@ logger = logging.getLogger(__name__)
 
 def clean_finite_values(data):
     """
-    Reemplaza valores no finitos (NaN, inf, -inf) con 0 o con un valor finito razonable.
+    Clip valores infinitos a rangos finitos.
     """
-    data = np.array(data, copy=True, dtype=float)
-    data = np.nan_to_num(data, nan=0.0, posinf=1e6, neginf=-1e6)
-    return data
+    return np.clip(data, -1e10, 1e10)
 
 
 class OutlierIQRTransformer(BaseEstimator, TransformerMixin):
