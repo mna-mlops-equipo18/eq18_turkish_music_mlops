@@ -15,7 +15,7 @@ def clean_finite_values(data):
     """
     Clip valores infinitos a rangos finitos.
     """
-    return np.clip(data, -1e10, 1e10)
+    return np.clip(data, -1e6, 1e6)
 
 
 class OutlierIQRTransformer(BaseEstimator, TransformerMixin):
