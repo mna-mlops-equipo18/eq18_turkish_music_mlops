@@ -195,7 +195,33 @@ dvc repro
 ```
 ---
 
-## Paso 10. Guardar trabajo
+## Paso 10. Ejecutar Pruebas Automatizadas
+
+El proyecto incluye un suite completo de 63 pruebas unitarias e integración que validan todos los componentes del pipeline.
+
+```bash
+# Ejecutar todas las pruebas
+pytest -q
+
+# Ejecutar con verbosidad
+pytest -v
+
+# Ejecutar con reporte de cobertura
+pytest --cov=eq18_turkish_music_mlops --cov-report=html
+
+# Ver reporte de cobertura en navegador
+# El reporte HTML se genera en: htmlcov/index.html
+
+# Usar script helper (Linux/Mac)
+chmod +x run_tests.sh
+./run_tests.sh all          # Todas las pruebas
+./run_tests.sh coverage     # Con cobertura
+./run_tests.sh integration  # Solo pruebas E2E
+```
+
+---
+
+## Paso 11. Guardar trabajo
 
 ```bash
 # 1. Sube los modelos/reportes nuevos a nuestro bucket de Azure
