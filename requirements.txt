@@ -8,7 +8,6 @@ seaborn
 dvc[azure]>=3.0.0
 cookiecutter-data-science
 pytest
-fastapi
 evidently
 sdv
 deepchecks
