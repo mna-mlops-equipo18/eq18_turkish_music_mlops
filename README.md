@@ -87,123 +87,51 @@ Estructura basada en **Cookiecutter Data Science**. Control de código con **Git
 | **Python** | Recomendado: `3.11` (verificado en `pyproject.toml`) |
 | **RAM** | **Mínimo 4GB.** El `pip install` fallará con menos. |
 | **Disco** | Mínimo 30GB de almacenamiento. |
-| **Git** | Para clonar el repositorio. |
 | **Azure Storage Key** | Archivo `azure_key.txt` con la *Account Key* de tu contenedor. |
-| *(OBLIGATORIO)* **Swap** | **Altamente recomendado** si la RAM es ≤8GB para evitar `Killed` errors. |
-| *(Opcional)* **Servidor MLflow** | VM con los requisitos de RAM/Disco y puerto `5000` abierto. |
 
 ---
 
-## Paso 1: Clonar el Repositorio
+## Paso 1: Instalar Docker
 
 ```bash
-# Clona el repositorio
-git clone <URL_DE_TU_REPOSITORIO>
+# 1. Actualizar el gestor de paquetes
+sudo apt-get update
 
-# Entra a la carpeta
-cd eq18_turkish_music_mlops
+# 2. Instalar Docker
+sudo apt-get install -y docker.io
 
-# Cambiar a la rama development
-git checkout development
+# 3. Añadir tu usuario al grupo de Docker 
+sudo usermod -aG docker $USER
+
+exit
 ```
 ---
 
 ## Paso 2. Configuración del Entorno 
 ```bash
 
-# 1. Crea el entorno 
-python3 -m venv .venv
+# 1. Descarga la imagen de dockerhub
+docker pull mariofonsecamtz/eq18_turkish_music_mlops:latest
 
-# 2. Activar entorno virtual
-source .venv/bin/activate
-
+# 2. Corre el contenedor
+docker run \
+    -d \
+    -p 8000:8000 \
+    --name mi-api \
+    mariofonsecamtz/eq18_turkish_music_mlops:latest
 ```
 ---
 
-## Paso 3. Crear Swap
+## Paso 3. Verificación
 
 ```bash
-
-sudo fallocate -l 4G /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
-
+docker ps
 ```
 ---
 
-## Paso 4. Instalar Dependencias
-Recomendamos altamente empezar a instalar lo mas pesado al principio.
+## Paso 4. Probar
+Abrir navegador web y visitar la página de swagger, que nos ayudará a validar si nuestra api está funcionando.
 
-```bash
+http://<IP_EXTERNA_SERVIDOR>:8000/docs
 
-pip install torch
-pip install pandas numpy scikit-learn
-pip install "dvc[azure]" mlflow xgboost
-pip install -r requirements.txt
-
-```
----
-
-## Paso 5. Conectar DVC a Azure
-Teniendo en cuenta que ya tienes tu llave (azure_key.txt) en tu maquina.
-
-```bash
-
-# moveremos la llave al root del proyecto
-mv /ruta/a/tu/azure_key.txt .
-AZURE_KEY_VALUE=$(cat azure_key.txt)
-dvc remote modify azure-storage account_key "$AZURE_KEY_VALUE" --local
-
-```
----
-
-## Paso 6. Descargar los datos
-
-```bash
-
-dvc pull
-
-```
----
-
-## Paso 7. Ejecutar pipelines
-Primero correremos un servidor de MLflow para poder ver todos los experimentos
-
-```bash
-nohup mlflow ui \
-    --backend-store-uri sqlite:///mlflow-server-data/mlflow.db \
-    --default-artifact-root ./mlflow-server-data/artifacts \
-    --host 0.0.0.0 \
-    --port 5000 \
-    --allowed-hosts "*" \
-    > mlflow-server.log 2>&1 &
-```
----
-
-## Paso 8. Configurar nuestra terminal al servidor de MLflow
-
-```bash
-export MLFLOW_TRACKING_URI="http://127.0.0.1:5000"
-```
----
-
-## Paso 9. Ejecutar pipeline
-
-```bash
-dvc repro
-```
----
-
-## Paso 10. Guardar trabajo
-
-```bash
-# 1. Sube los modelos/reportes nuevos a nuestro bucket de Azure
-dvc push
-
-# 2. Guardar punteros en git
-git add dvc.lock reports/.gitignore
-git commit -m "Pipeline completo ejecutado y modelos actualizados"
-git push origin development
-```
 ---
